@@ -63,60 +63,7 @@ class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
         $this->priedsModel = model("App\Models\Prieds");
-        $this->client = new Client();
+        
     }
     
-    public function runTokenCheck()
-    {
-        $token = $this->getLatestToken();
-
-        return $this->checkToken($token);
-    }
-
-    protected function checkToken($token)
-    {
-        $client = new Client();
-        $tokenModel = model('App\Models\Prieds');
-
-        $response = $client->request('POST', 'https://api.product.prieds.com/priedsoa/open-api/v1/public/auth-simple-token-check', [
-            'headers' => [
-                'x-prieds-token' => $token,
-                'x-prieds-username' => 'AIO_INTEGRATION'
-            ]
-        ]);
-
-        $data = json_decode($response->getBody()->getContents());
- 
-        if ($data->valid == FALSE) {
-            $newToken = $this->getNewToken();
-
-            return $tokenModel->insert(["token" => $newToken]);
-        }
-    }
-
-    private function getNewToken()
-    {
-        $client = new Client();
-        $request = $client->request('POST', 'https://api.product.prieds.com/priedsoa/open-api/v1/public/simple-token', [
-            'headers' => [
-                'x-prieds-secret-key' => 'E9A41B175EBC2086FAB7692C32F63EB1',
-                'x-prieds-username' => 'AIO_INTEGRATION' 
-            ]
-        ]);
-
-        $response = json_decode($request->getBody()->getContents());
-
-        if ($response->valid == TRUE) {
-            return $response->token;
-        }
-    }
-
-    protected function getLatestToken()
-    {
-        $tokenModel = model('App\Models\Prieds');
-
-        $token = $tokenModel->select(["token"])->orderBy('id', 'desc')->first();
-
-        return $token->token;
-    }
 }

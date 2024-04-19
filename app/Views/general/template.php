@@ -9,20 +9,20 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback"> 
 
     <!-- Font Awesome Icons --> 
-    <link rel="stylesheet" href="<?= base_url('public/adminlte') ?>/plugins/fontawesome-free/css/all.min.css"> 
+    <link rel="stylesheet" href="<?= base_url('public/adminlte/plugins/fontawesome-free/css/all.min.css') ?>"> 
 
     <!-- Select2 -->
-    <link rel="stylesheet" href="<?= base_url('public/adminlte') ?>/plugins/select2/css/select2.min.css">
-    <link rel="stylesheet" href="<?= base_url('public/adminlte') ?>/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+    <link rel="stylesheet" href="<?= base_url('public/adminlte/plugins/select2/css/select2.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('public/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') ?>">
 
     <!-- Toastr -->
-    <link rel="stylesheet" href="<?= base_url('public/adminlte') ?>/plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="<?= base_url('public/adminlte/plugins/toastr/toastr.min.css') ?>">
 
     <!-- Theme style -->
-    <link rel="stylesheet" href="<?= base_url('public/adminlte') ?>/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="<?= base_url('public/adminlte/dist/css/adminlte.min.css') ?>">
 
     <!-- Datatable -->
-    <link href="<?= base_url('/public/adminlte') ?>/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css">
+    <link href="<?= base_url('/public/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') ?>" rel="stylesheet" type="text/css">
     
     <style>
         .price-option-need-approve{
@@ -170,13 +170,13 @@
     <!-- REQUIRED SCRIPTS -->
 
     <!-- jQuery -->
-    <script src="<?= base_url('public/adminlte') ?>/plugins/jquery/jquery.min.js"></script>
+    <script src="<?= base_url('public/adminlte/plugins/jquery/jquery.min.js') ?>"></script>
     <!-- Bootstrap 4 -->
-    <script src="<?= base_url('public/adminlte') ?>/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= base_url('public/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') ?>"></script>
     <!-- Select2 -->
-    <script src="<?= base_url('public/adminlte') ?>/plugins/select2/js/select2.full.min.js"></script>
+    <script src="<?= base_url('public/adminlte/plugins/select2/js/select2.full.min.js') ?>"></script>
     <!-- Toastr -->
-    <script src="<?= base_url('public/adminlte') ?>/plugins/toastr/toastr.min.js"></script>
+    <script src="<?= base_url('public/adminlte/plugins/toastr/toastr.min.js') ?>"></script>
     <!-- AdminLTE App -->
     <script src="<?= base_url('public/adminlte') ?>/dist/js/adminlte.min.js"></script>
     <!-- Datatable -->

@@ -30,7 +30,7 @@ class App extends BaseConfig
      * @var string
      */
     //public $baseURL = 'https://stokaio.com/';
-    public $baseURL = 'http://localhost/StocksAIO/';
+    public $baseURL = 'http://localhost/AIO';
 
     public $months = ([
         "",
