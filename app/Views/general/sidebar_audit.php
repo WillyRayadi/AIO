@@ -58,53 +58,30 @@
 <li class="nav-header">Penjualan</li>
 
 <li class="nav-item">
-    <a href="<?= base_url('audit_product_buys') ?>" class="nav-link">
+    <a href="<?= base_url('audit/product/buys') ?>" class="nav-link">
         <i class="nav-icon fa fa-shopping-cart"></i>
         <p>
             Pembelian Barang (PD)
         </p>
     </a>
 </li>
+
 <li class="nav-item">
-    <a href="javascript:void(0)" class="nav-link">
-        <i class="nav-icon fa fa-tags"></i>
+    <a href="<?= base_url('audit/sales'); ?>" class="nav-link">
+        <i class="fas fa-tag nav-icon"></i>
         <p>
             Penjualan (SO)
-            <i class="right fas fa-angle-left"></i>
         </p>
     </a>
-    <ul class="nav nav-treeview">
-        <li class="nav-item">
-            <a href="<?= base_url('audit/sales'); ?>" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>
-                    Data Penjualan
-                </p>
-            </a>
-        </li>
-    </ul>
 </li>
-  
-<li class="nav-item">
-    <a href="javascript:void(0)" class="nav-link">
-        <i class="nav-icon fa fa-truck"></i>
+
+<li class="nav-item"> 
+    <a href="<?= base_url('audit/sales_warehouse'); ?>" class="nav-link">
+        <i class="fas fa-truck nav-icon"></i>
         <p>
             Pengiriman (DO)
-            <i class="right fas fa-angle-left"></i>
         </p>
     </a>
-  
-    <ul class="nav nav-treeview"> 
-        <li class="nav-item"> 
-            <a href="<?= base_url('audit/sales_warehouse'); ?>" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>
-                    Data Pengiriman
-                </p>
-            </a>
-        </li>
-    
-    </ul>
 </li>
 
 <li class="nav-header">Akun</li>

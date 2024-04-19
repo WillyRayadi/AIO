@@ -29,6 +29,7 @@ Laporan Barang Keluar
                              <option>Pilih Barang</option>
                              <option value="AQUA">AQUA</option>
                              <option value="ARISTON">ARISTON</option>
+                             <option value="ARTUGO">ARTUGO</option>
                              <option value="AVARO">AVARO</option>
                              <option value="BERVIN">BERVIN</option>
                              <option value="CHANGHONG">CHANGHONG</option>

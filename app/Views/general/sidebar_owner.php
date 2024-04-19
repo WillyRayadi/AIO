@@ -44,41 +44,26 @@
         </li>
         <?php
         $db = \Config\Database::connect();
-        $session = \Config\Services::session();
-        $admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
+        $session = \Config\Services::session(); 
+        $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
         $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-        if ($roles->transfer_warehouse_lihat != NULL) : ?>
-            <li class="nav-item">
-                <a href="<?= base_url('products/transfers') ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Transfer Barang</p>
-                </a>
-            </li>
+        if($roles->transfer_warehouse_lihat != NULL): ?>
+        <li class="nav-item">
+            <a href="<?= base_url('products/transfers') ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Transfer Barang</p>
+            </a>
+        </li>
         <?php endif ?>
-
+        
         <li class="nav-item">
             <a href="<?= base_url('products/repairs') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Perbaikan (Service)</p>
             </a>
         </li>
-
-        <?php
-        $db = \Config\Database::connect();
-        $session = \Config\Services::session();
-        $admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
-        $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
-
-        if ($roles->retur_product_lihat != NULL) : ?>
-            <!-- <li class="nav-item">
-                <a href="<?= base_url('sales/sale/retur') ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Return</p>
-                </a>
-            </li> -->
-        <?php endif ?>
-
+        
         <li class="nav-item">
             <a href="<?= base_url('products/prices') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
@@ -91,175 +76,175 @@
 
 <?php
 $db = \Config\Database::connect();
-$session = \Config\Services::session();
-$admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
+$session = \Config\Services::session(); 
+$admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
 $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-if ($roles->purchase_order_lihat != NULL) : ?>
-    <li class="nav-item">
-        <a href="<?= base_url('products/buys') ?>" class="nav-link">
-            <i class="nav-icon fa fa-shopping-cart"></i>
-            <p>
-                Pembelian Barang (PD)
-            </p>
-        </a>
-    </li>
+if($roles->purchase_order_lihat != NULL): ?>
+<li class="nav-item">
+    <a href="<?= base_url('products/buys') ?>" class="nav-link">
+        <i class="nav-icon fa fa-shopping-cart"></i>
+        <p>
+            Pembelian Barang (PD)
+        </p>
+    </a>
+</li>
 <?php endif ?>
 
 <?php
 $db = \Config\Database::connect();
-$session = \Config\Services::session();
-$admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
+$session = \Config\Services::session(); 
+$admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
 $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-if ($roles->sales_order_lihat != NULL) : ?>
-    <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link">
-            <i class="nav-icon fa fa-tags"></i>
-            <p>
-                Penjualan (SO)
-                <i class="right fas fa-angle-left"></i>
-            </p>
-        </a>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="<?= base_url('sales/sales/add') ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Buat Penjualan</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="<?= base_url('owner/sales'); ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>
-                        Data Penjualan
-                    </p>
-                </a>
-            </li>
-        </ul>
-    </li>
+if($roles->sales_order_lihat != NULL): ?>
+<li class="nav-item">
+    <a href="javascript:void(0)" class="nav-link">
+        <i class="nav-icon fa fa-tags"></i>
+        <p>
+            Penjualan (SO)
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="<?= base_url('sales/sales/add') ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Buat Penjualan</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('owner/sales'); ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                    Data Penjualan
+                </p>
+            </a>
+        </li>
+    </ul>
+</li>
 
+<?php endif ?>
+
+
+<?php
+$db = \Config\Database::connect();
+$session = \Config\Services::session(); 
+$admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
+$roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
+
+if($roles->agreement_lihat != NULL): ?>
+<li class="nav-item">    
+    <a href="javascript:void(0)" class="nav-link">
+        <i class="nav-icon fa fa-check"></i>
+        <p>Persetujuan
+            <i class="right fas fa-angle-left"></i>
+        </p>
+        
+    </a>
+
+    <ul class="nav nav-treeview">
+
+        <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('owner/sales/need_approval'); ?>">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                    Persetujuan Harga
+                </p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('owner/perubahan/status'); ?>">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                   Persetujuan Perubahan
+                </p>
+            </a>
+        </li>
+        
+        <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('owner/perubahan/data'); ?>">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                    Perubahan Data PD
+                </p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="<?= base_url('approve/submission/do'); ?>">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                    Pengajuan Print Ulang
+                </p>
+            </a>
+        </li>
+    </ul>  
+</li> 
+
+<?php endif ?>
+ 
+
+<?php
+$db = \Config\Database::connect();
+$session = \Config\Services::session(); 
+$admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
+$roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
+
+if($roles->delivery_order_lihat != NULL): ?>
+<li class="nav-item">
+    <a href="javascript:void(0)" class="nav-link">
+        <i class="nav-icon fa fa-truck"></i>
+        <p>
+            Pengiriman (DO)
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="<?= base_url('owner/delivery_orders') ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Buat Pengiriman</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('warehouse/sales'); ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                    Data Pengiriman
+                </p>
+            </a>
+        </li>
+    
+    </ul>
+</li>
 <?php endif ?>
 
 <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link">
-            <i class="nav-icon fa fa-shopping-cart"></i>
-            <p>
-                Return Barang
-                <i class="right fas fa-angle-left"></i>
-            </p>
-        </a>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="<?= base_url('return/pemasok') ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Return Pemasok</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="<?= base_url('sales/sale/retur'); ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>
-                        Return Penjualan (SO)
-                    </p>
-                </a>
-            </li>
-        </ul>
-    </li>
-
-
-<?php
-$db = \Config\Database::connect();
-$session = \Config\Services::session();
-$admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
-$roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
-
-if ($roles->agreement_lihat != NULL) : ?>
-    <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link">
-            <i class="nav-icon fa fa-check"></i>
-            <p>Persetujuan
-                <i class="right fas fa-angle-left"></i>
-            </p>
-
-        </a>
-
-        <ul class="nav nav-treeview">
-
-            <li class="nav-item">
-                <a class="nav-link" href="<?= base_url('owner/sales/need_approval'); ?>">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>
-                        Persetujuan Harga
-                    </p>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="<?= base_url('owner/perubahan/status'); ?>">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>
-                        Persetujuan Perubahan
-                    </p>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="<?= base_url('owner/perubahan/data'); ?>">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>
-                        Perubahan Data PD
-                    </p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="<?= base_url('approve/submission/do'); ?>">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>
-                        Pengajuan Print Ulang
-                    </p>
-                </a>
-            </li>
-        </ul>
-    </li>
-
-<?php endif ?>
-
-
-<?php
-$db = \Config\Database::connect();
-$session = \Config\Services::session();
-$admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
-$roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
-
-if ($roles->delivery_order_lihat != NULL) : ?>
-    <li class="nav-item">
-        <a href="javascript:void(0)" class="nav-link">
-            <i class="nav-icon fa fa-truck"></i>
-            <p>
-                Pengiriman (DO)
-                <i class="right fas fa-angle-left"></i>
-            </p>
-        </a>
-        <ul class="nav nav-treeview">
-            <li class="nav-item">
-                <a href="<?= base_url('owner/delivery_orders') ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Buat Pengiriman</p>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="<?= base_url('warehouse/sales'); ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>
-                        Data Pengiriman
-                    </p>
-                </a>
-            </li>
-
-        </ul>
-    </li>
-<?php endif ?>
+    <a href="javascript:void(0)" class="nav-link">
+        <i class="nav-icon fa fa-undo"></i>
+        <p>
+            Retur Data
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item">
+            <a href="<?= base_url('return/pemasok') ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Retur Pemasok</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= base_url('owner/sales/return'); ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>
+                    Retur Penjualan (SO)
+                </p>
+            </a>
+        </li>
+    </ul>
+</li>
 
 <li class="nav-header">Data</li>
 <li class="nav-item">
@@ -279,7 +264,7 @@ if ($roles->delivery_order_lihat != NULL) : ?>
             <i class="right fas fa-angle-left"></i>
         </p>
     </a>
-    <ul class="nav nav-treeview">
+    <ul class="nav nav-treeview">       
         <li class="nav-item">
             <a href="<?= base_url('warehouses') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
@@ -288,19 +273,19 @@ if ($roles->delivery_order_lihat != NULL) : ?>
         </li>
         <?php
         $db = \Config\Database::connect();
-        $session = \Config\Services::session();
-        $admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
+        $session = \Config\Services::session(); 
+        $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
         $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-        if ($roles->stokopname_lihat != NULL) : ?>
-            <li class="nav-item">
-                <a href="<?= base_url('stok_opname') ?>" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i>
-                    <p>Stok Opname</p>
-                </a>
-            </li>
+        if($roles->stokopname_lihat != NULL): ?>
+        <li class="nav-item">
+            <a href="<?= base_url('stok_opname')?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Stok Opname</p>
+            </a>
+        </li>
         <?php endif ?>
-
+        
         <li class="nav-item">
             <a href="<?= base_url('codes') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
@@ -309,20 +294,27 @@ if ($roles->delivery_order_lihat != NULL) : ?>
                 </p>
             </a>
         </li>
-
+        
         <li class="nav-item">
             <a href="<?= base_url('products/categories') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Kategori</p>
             </a>
-        </li>
+        </li> 
+
+        <li class="nav-item">
+            <a href="<?= base_url('subkategori') ?>" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Subkategori</p>
+            </a>
+        </li> 
         <?php
         $db = \Config\Database::connect();
-        $session = \Config\Services::session();
-        $admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
+        $session = \Config\Services::session(); 
+        $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
         $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-        if ($roles->products_lihat != NULL) : ?>
+        if($roles->products_lihat != NULL): ?>
             <li class="nav-item">
                 <a href="<?= base_url('products') ?>" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
@@ -330,7 +322,7 @@ if ($roles->delivery_order_lihat != NULL) : ?>
                 </a>
             </li>
         <?php endif ?>
-
+        
         <li class="nav-item">
             <a href="<?= base_url('vehicles') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
@@ -339,8 +331,8 @@ if ($roles->delivery_order_lihat != NULL) : ?>
                 </p>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="<?= base_url('locations') ?>" class="nav-link">
+       <li class="nav-item">
+            <a href="<?= base_url('locations')?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>
                     Area Pengiriman
@@ -397,7 +389,7 @@ if ($roles->delivery_order_lihat != NULL) : ?>
                 <p>Data Promo</p>
             </a>
         </li>
-
+        
         <li class="nav-item">
             <a href="<?= base_url('brands') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
@@ -407,16 +399,10 @@ if ($roles->delivery_order_lihat != NULL) : ?>
         <li class="nav-item">
             <a href="<?= base_url('products/stokOpname') ?>" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Data Stok Opname (-)</p>
+                    <p>Data Stok Opname (-)</p>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="<?= base_url('branch') ?>" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Kota</p>
-            </a>
-        </li>
-
+        
     </ul>
 </li>
 <li class="nav-header">Akun</li>

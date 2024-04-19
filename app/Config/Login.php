@@ -4,8 +4,7 @@ namespace Config;
 
 use CodeIgniter\Config\BaseConfig;
 
-class Login extends BaseConfig
-{
+class Login extends BaseConfig{
     private $session;
     private $adminModel;
 
@@ -15,15 +14,14 @@ class Login extends BaseConfig
     public $loginEmail = NULL;
     public $loginUsername = NULL;
     public $loginRole = NULL;
-    public $loginSaleTarget = NULL;
+    public $loginSaleTarget  = NULL;
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->session = \Config\Services::session();
         $this->adminModel = new \App\Models\Administrator();
 
-        if ($this->session->login_id != NULL) {
-            $admin = $this->adminModel->where("id", $this->session->login_id)->first();
+        if($this->session->login_id != NULL){
+            $admin = $this->adminModel->where("id",$this->session->login_id)->first();
 
             $this->loginName = $admin->name;
             $this->loginAddress = $admin->address;

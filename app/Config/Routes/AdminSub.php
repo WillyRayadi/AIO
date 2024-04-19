@@ -1,13 +1,15 @@
 <?php
 
-$routes->post('add/submission/print', 'AdminSub::add_submission_print');
+$routes->get('products/inden', 'AdminSub::products_inden');
 
-$routes->get('allowed/roles', 'AdminSub::data_allow_role');
+$routes->post('add/submission/print', 'AdminSub::add_submission_print');
+$routes->get('allowed/roles', 'AdminSub::data_allow_role'); 
 $routes->get('report/allow/role', 'AdminSub::report_allow');
 $routes->get('custom/insentif', 'AdminSub::custom_insentif');   
 $routes->get('custom/insentif/manage/(:num)', 'AdminSub::custom_insentif_manage/$1');
 $routes->post('set/custom/insentif', 'AdminSub::set_custom_insentif');
 $routes->post('ajax/get/insentif', 'AdminSub::getInsentif');
+$routes->get('subkategori', 'AdminSub::subcategory');
 
 $routes->get('export/user/stokaio', 'AdminSub::export_user');
 
@@ -15,6 +17,7 @@ $routes->post('add/customer/redeem', 'AdminSub::add_customer_redeeem');
 $routes->get('redeem/points','AdminSub::redeem_point');
 $routes->get('user/redeem/manage/(:num)', 'AdminSub::user_redeem_manage/$1');
 $routes->post('add/product/redeem', 'AdminSub::add_product_redeem');
+$routes->post('add/subkategori', 'AdminSub::add_subcategori');
 
 $routes->get('reports/contacts', 'AdminSub::report_contacts');
 $routes->get('detail/export/data', 'Product::detail_export_products');
@@ -178,8 +181,8 @@ $routes->get('audit/warehouse_sales','Audit::sales_warehouse');
 $routes->get('audit/product_all','Audit::product');
 $routes->get('products_all/(:num)/manage', 'Audit::products_manage/$1');
 $routes->get("audit/warehouse/sales/(:num)/manage","Audit::sales_manage_warehouse/$1/$2");
-$routes->get('audit_product_buys', 'Audit::product_buys');
-$routes->get('audit/product_buys_manage/(:num)','Audit::manage_product_buys/$1');
+$routes->get('audit/product/buys', 'Audit::product_buys');
+$routes->get('audit/product/buys/manage/(:num)','Audit::manage_product_buys/$1');
 $routes->get('audit/report_sales','Audit::report_sales');
 $routes->get('audit/report_produk','Audit::report_produk');
 

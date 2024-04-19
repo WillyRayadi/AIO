@@ -31,61 +31,59 @@ Penjualan (SO)
                             <th class='text-center'>Nama Pelanggan</th>
                             <th class='text-center'>Status</th>
                             <th class='text-center'>Tags</th>
-                            <th class="text-center">Order ID (Online)</th>
+                          	<th class="text-center">Order ID (Online)</th>
                             <th class='text-center'>Opsi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php
-                        foreach ($sales as $sale) {
-                        ?>
+                        foreach($sales as $sale){
+                            ?>
                             <tr>
                                 <td class='text-center'><?= $sale->number ?></td>
-                                <td class='text-right'><?= date("d-m-Y", strtotime($sale->transaction_date)) ?></td>
+                                <td class='text-right'><?= date("d-m-Y",strtotime($sale->transaction_date)) ?></td>
                                 <td>
                                     <?php
-                                    if ($sale->contact_id == NULL) {
-                                    } else {
+                                    if($sale->contact_id == NULL){
+
+                                    }else{
                                         $contact = $db->table("contacts");
-                                        $contact->where("id", $sale->contact_id);
-                                        $contact->where("type", 2);
+                                        $contact->where("id",$sale->contact_id);
+                                        $contact->where("type",2);
                                         $contact = $contact->get();
                                         $contact = $contact->getFirstRow();
-
-                                        if (!empty($contact)) {
-                                            echo $contact->name . " | " . $contact->phone;
-                                        } else {
+                                        
+                                        if(!empty($contact)) {
+                                            echo $contact->name." | ".$contact->phone;
+                                        }else{
                                             echo "-";
                                         }
                                     }
                                     ?>
                                 </td>
                                 <td class='text-center'>
-                                    <span class="badge badge-<?= config("App")->orderStatusColor[$sale->status] ?>"><?= config("App")->orderStatuses[$sale->status] ?></span>
+                                <span class="badge badge-<?= config("App")->orderStatusColor[$sale->status] ?>"><?= config("App")->orderStatuses[$sale->status] ?></span>
                                 </td>
                                 <td>
                                     <?php
-                                    if (!empty($sale->tags)) {
-                                        $thisSaleTagsExplode = explode("#", $sale->tags);
-                                        foreach ($thisSaleTagsExplode as $tag) {
-                                            if ($tag == NULL) {
-                                            } else {
-                                                echo "#" . $tag . " ";
-                                            }
+                                    $thisSaleTagsExplode = explode("#",$sale->tags);
+                                    foreach($thisSaleTagsExplode as $tag) {
+                                        if($tag == NULL){
+                                            
+                                        }else{
+                                            echo "#".$tag." ";
                                         }
-                                    } else {
-                                        echo "-";
                                     }
                                     ?>
                                 </td>
-                                <td class="text-center"><?= $sale->order_id  ?></td>
+                              	<td class="text-center"><?= $sale->order_id  ?></td>
                                 <td class='text-center'>
-                                    <a href="<?= base_url('sales/sales/' . $sale->id . '/manage') ?>" class='btn btn-success btn-sm' title="Kelola Pesanan Penjualan">
+                                    <a href="<?= base_url('sales/sales/'.$sale->id.'/manage') ?>" class='btn btn-success btn-sm' title="Kelola Pesanan Penjualan">
                                         <i class='fa fa-cog'></i>
                                     </a>
                                 </td>
                             </tr>
-                        <?php
+                            <?php
                         }
                         ?>
                     </tbody>

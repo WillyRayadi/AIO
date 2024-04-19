@@ -38,24 +38,22 @@ class BaseController extends Controller
      */
     protected $helpers = [];
 
-    
-    //protected $db;
-
-
     /**
      * Constructor.
      */
-
+     
     /**
      * @var \App\Models\Prieds
      */
-    protected $priedsModel;
-
-    /**
-     * @var GuzzleHttp|Client 
-     */
+     protected $priedsModel;
+     
+     /**
+      * @var GuzzleHttp|Client 
+      */
     protected $client;
-
+    
+    
+     
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         // Do Not Edit This Line
@@ -66,11 +64,8 @@ class BaseController extends Controller
         // E.g.: $this->session = \Config\Services::session();
         $this->priedsModel = model("App\Models\Prieds");
         $this->client = new Client();
-
-        
-        //$this->db = \Config\Database::connect();
     }
-
+    
     public function runTokenCheck()
     {
         $token = $this->getLatestToken();
@@ -91,7 +86,7 @@ class BaseController extends Controller
         ]);
 
         $data = json_decode($response->getBody()->getContents());
-
+ 
         if ($data->valid == FALSE) {
             $newToken = $this->getNewToken();
 
@@ -105,7 +100,7 @@ class BaseController extends Controller
         $request = $client->request('POST', 'https://api.product.prieds.com/priedsoa/open-api/v1/public/simple-token', [
             'headers' => [
                 'x-prieds-secret-key' => 'E9A41B175EBC2086FAB7692C32F63EB1',
-                'x-prieds-username' => 'AIO_INTEGRATION'
+                'x-prieds-username' => 'AIO_INTEGRATION' 
             ]
         ]);
 

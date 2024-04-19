@@ -238,7 +238,10 @@ Kelola Penjualan Grosir (SO)
                                     <option value="">-- PILIH JENIS TRANSAKSI --</option>
                                     <option value="GROSIR" <?php echo ($sale->transaction_type == 'GROSIR') ? 'selected' : ''; ?>>GROSIR</option>
                                     <option value="ONLINE" <?php echo ($sale->transaction_type == 'ONLINE') ? 'selected' : ''; ?>>ONLINE</option>
-                                    <option value="RETAIL" <?php echo ($sale->transaction_type == 'RETAIL') ? 'selected' : ''; ?>>RETAIL</option>
+                                    <option value="RETAIL - ASS" <?php echo ($sale->transaction_type == 'RETAIL - ASS') ? 'selected' : ''; ?>>RETAIL - ASS</option>
+                                    <option value="RETAIL - KALIJAGA" <?php echo ($sale->transaction_type == 'RETAIL - KALIJAGA') ? 'selected' : ''; ?>>RETAIL - KALIJAGA</option>
+                                    <option value="RETAIL - PREMIUM" <?php echo ($sale->transaction_type == 'RETAIL - PREMIUM') ? 'selected' : ''; ?>>RETAIL - PREMIUM</option>
+                                    <option value="RETAIL - TASIKMALAYA" <?php echo ($sale->transaction_type == 'RETAIL - TASIKMALAYA') ? 'selected' : ''; ?>>RETAIL - TASIKMALAYA</option>
                                 </select>
                             </div>
                         

@@ -84,7 +84,7 @@ Tambah Akun
                             <label>Role</label>
                             <select name='role' class='form-control'>
                                 <?php
-                                for($r =1; $r <= count(config("App"->roles)) -1; $r++){
+                                for($r =1; $r <= count(config("App")->roles) - 1; $r++){
                                     echo"<option value='".$r."'>".config("App")->roles[$r]."</option>";
                                 }
                                 ?>

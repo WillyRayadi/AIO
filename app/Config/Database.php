@@ -16,7 +16,7 @@ class Database extends Config
      *
      * @var string
      */
-
+  
     public $filesPath = APPPATH . 'Database' . DIRECTORY_SEPARATOR;
 
     /**
@@ -25,7 +25,7 @@ class Database extends Config
      *
      * @var string
      */
-
+  
     public $defaultGroup = 'default';
 
     /**
@@ -33,7 +33,7 @@ class Database extends Config
      *
      * @var array
      */
-
+  
     public $default = [
         'DSN'      => '',
         'hostname' => 'localhost',
@@ -60,7 +60,7 @@ class Database extends Config
      *
      * @var array
      */
-
+  
     public $tests = [
         'DSN'      => '',
         'hostname' => '127.0.0.1',
@@ -88,7 +88,7 @@ class Database extends Config
         // Ensure that we always set the database group to 'tests' if
         // we are currently running an automated test suite, so that
         // we don't overwrite live data on accident.
-
+      
         if (ENVIRONMENT === 'testing') {
             $this->defaultGroup = 'tests';
         }

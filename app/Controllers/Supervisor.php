@@ -80,6 +80,167 @@ class Supervisor extends BaseController
         }
     }
     
+    public function custom_insentif(){
+        $insentiv = $this->db->table('sales');
+        $insentiv->select([
+            'sales.id sales_id',
+            'sales.number as sale_number',
+            'contacts.name as contact_name',
+            'administrators.name as admin_name',
+            'sales.transaction_date as sale_date',
+        ]);
+        $insentiv->join('contacts','sales.contact_id = contacts.id','left');
+        $insentiv->join('administrators','sales.admin_id = administrators.id','left');
+        $insentiv->where('sales.contact_id !=', NULL);
+        $insentiv->where('sales.status', 6);
+        $insentiv->orderBy('sales.transaction_date', 'desc');
+        $insentiv = $insentiv->get();
+        $insentiv = $insentiv->getResultObject();
+
+        $data = ([
+            'db'    => $this->db,
+            'insentiv'  => $insentiv,
+        ]);
+
+        return view('modules/custom_insentif', $data);
+    }
+    
+    public function getInsentif()
+    {
+        $price_id = $this->request->getVar('price_id');
+        $price = $this->request->getVar('price');
+        $user = $this->request->getVar('user');
+        
+        
+        $role = $this->adminModel->select('role')->where('id', $user)->first();
+        $rumus = $this->productPriceModel->where('id', $price_id)->first();
+
+        
+        if($role->role == 2 || $role->role == 3) {
+            $sales = $this->insentifModel->where("role", $role->role)->where("price_id", $rumus->id)->first();
+            
+            $levelSales = [
+                0,
+                $sales->level_1,
+                $sales->level_2,
+                $sales->level_3,
+                $sales->level_4,
+                $sales->level_5,
+                $sales->level_6,
+                $sales->level_7,
+                $sales->level_8,
+                $sales->level_9,
+                $sales->level_10
+            ];
+            
+            $margins = ([
+                0, // 0
+                $rumus->plus_one, // margin ke-1
+                $rumus->plus_two, // margin ke-2
+                $rumus->plus_three, // margin ke-3
+                $rumus->plus_four, // margin ke-4
+                $rumus->plus_five, // margin ke-5
+                $rumus->plus_six, // margin ke-6
+                $rumus->plus_seven, // margin ke-7
+                $rumus->plus_eight, // margin ke-8
+                $rumus->plus_nine, // margin ke-9
+                $rumus->plus_ten, // margin ke-10
+            ]);
+            
+            $arrayPrices = ([0]);
+            $dataInsentif = [];
+
+            $thisPrice = floatval($price);
+            array_push($arrayPrices,$thisPrice);
+
+            
+            for($p = 2; $p <= 10; $p++){
+                $thisPrice += $margins[$p];
+                array_push($arrayPrices, $thisPrice);
+            }
+            
+            for($x = 4; $x <= 10; $x++) {
+                $insentifLevel = floatval($levelSales[$x]);
+                $insentif = ($arrayPrices[$x] * $insentifLevel) / 100;
+                
+                $salesInsentif = "($x)"." - "."Rp.".number_format($insentif, 0, ",", ".");
+                
+                $dataInsentif[] = $salesInsentif;
+            }
+            
+            return $this->response->setJSON($dataInsentif);
+        }
+
+    }
+
+    public function custom_insentif_manage($id){
+        $items = $this->db->table('sale_items');
+        $items->select([
+            'sale_items.price',
+            'sale_items.quantity',
+            'sale_items.bonus_sales',
+            'sale_items.id as item_id',
+            'products.id as product_id',
+            'products.name as product_name',
+            'products.price_id as product_price',
+            'products.price as prices'
+        ]);
+        $items->join('products', 'sale_items.product_id = products.id','left');
+        $items->where('sale_items.sale_id', $id);
+        $items->orderBy('sale_items.id','desc');
+        $items = $items->get();
+        $items = $items->getResultObject();
+        
+        $dataItem = $this->db->table('sale_items');
+        $dataItem->select([
+            'sale_items.id as item_id',
+        ]);
+        $dataItem->where('sale_items.sale_id', $id);
+        $dataItem->orderBy('sale_items.id','desc');
+        $dataItem = $dataItem->get();
+        $dataItem = $dataItem->getFirstRow();
+
+        $sales = $this->db->table('sales');
+        $sales->select([
+            'sales.transaction_date',
+            'sales.number as sale_number',
+            'contacts.name as contact_name',
+            'administrators.name as admin_name',
+            'sales.admin_id as user_id',
+            'sales.id as sale_id'
+        ]);
+        $sales->join('contacts','sales.contact_id = contacts.id','left');
+        $sales->join('administrators','sales.admin_id = administrators.id','left');
+        $sales->where('sales.id', $id);
+        $sales = $sales->get();
+        $sales = $sales->getFirstRow();
+
+        $data = ([
+            'db' => $this->db,
+            'items' => $items,
+            'sales' => $sales,
+            'dataItem'  => $dataItem,
+        ]);
+
+        return view('modules/custom_insentif_manage', $data);
+    }
+
+    public function set_custom_insentif(){
+        $id_items = $this->request->getPost('item_id');
+        $insentif = $this->request->getPost('insentif');
+        
+        $this->saleItemModel
+        ->where('sale_items.id',$id_items)
+        ->set([
+            'bonus_sales'   => $insentif,
+        ])->update();
+
+        $this->session->setFlashdata('message_type', 'success');
+        $this->session->setFlashdata('message_content', 'Insentif berhasil diubah');
+
+        return redirect()->back();
+    }
+    
     public function getProducts()
     {
         

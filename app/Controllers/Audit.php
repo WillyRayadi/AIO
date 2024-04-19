@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+helper('tools_helper');
 
 class Audit extends BaseController
 { 
@@ -204,17 +205,35 @@ class Audit extends BaseController
  
 
     public function sales_warehouse(){
-        $sales = $this->saleModel
-        ->where("contact_id !=",NULL)
-        ->where("payment_id !=",NULL)
-        ->where("status >=",2)
-        ->where("status !=",3)
-        ->orderBy("transaction_date","desc")
-        ->orderBy("id","desc")->findAll();
+        $allow_warehouses = !empty(cek_session($this->session->get('login_id'))['allow_warehouses']) ? cek_session($this->session->get('login_id'))['allow_warehouses'] : '"1","2","3","4","5","6","7","8","9","10"';
+        
+        $sales = $this->db->table('sale_items as a');
+        $sales->select([
+            'b.id',
+            'b.status',
+            'b.transaction_date',
+            'e.name as admin_name', 
+            'c.name as contact_name',   
+            'b.number as sale_number',
+        ]);
+        $sales->join('sales as b', 'a.sale_id = b.id','left');
+        $sales->join('contacts as c', 'b.contact_id = c.id','left');
+        $sales->join('product_stocks as d', 'a.id = d.sale_item_id','left');
+        $sales->join('administrators as e', 'b.admin_id = e.id','left');
+        $sales->where('b.contact_id !=', NULL);
+        $sales->where('b.payment_id !=', NULL);
+        $sales->where("status >=",2);
+        $sales->where("status !=",3);
+        $sales->where("b.trash", 0);
+        $sales->whereNotIn('d.warehouse_id', [$allow_warehouses]);
+        $sales->orderBy('b.transaction_date','desc');
+        $sales->groupBy('b.id');
+        $sales = $sales->get();
+        $sales = $sales->getResultObject();
 
         $data = ([
-            "sales" => $sales,  
-            "db"    => $this->db,
+            'sales' => $sales,
+            'db'  => $this->db,
         ]);
  
         return view("audit/sales_warehouse",$data); 
@@ -541,41 +560,53 @@ class Audit extends BaseController
         $prices = $prices->getResultObject();  
         
         $data = ([ 
-            "prices" => $prices, 
+            "prices" => $prices,
         ]); 
 
         return view("audit/price_approval",$data); 
     } 
- 
+    
     public function sales(){ 
-        $sales = $this->saleModel 
-        ->where("contact_id !=",NULL) 
-        ->where("payment_id !=",NULL) 
-        ->orderBy("transaction_date","desc") 
-        ->orderBy("id","desc")->findAll(); 
+        $allow_warehouses = !empty(cek_session($this->session->get('login_id'))['allow_warehouses']) ? cek_session($this->session->get('login_id'))['allow_warehouses'] : '"1","2","3","4","5","6","7","8","9","10"';
+        
+        $sales = $this->db->table('sale_items as a'); 
+        $sales->select([
+            'b.id',
+            'b.status',
+            'b.transaction_date',
+            'e.name as admin_name',
+            'c.name as contact_name',   
+            'b.number as sale_number',
+        ]);
+        $sales->join('sales as b', 'a.sale_id = b.id','left');
+        $sales->join('contacts as c', 'b.contact_id = c.id','left');
+        $sales->join('product_stocks as d', 'a.id = d.sale_item_id','left');
+        $sales->join('administrators as e', 'b.admin_id = e.id','left');
+        $sales->where('b.contact_id !=', NULL);
+        $sales->where('b.payment_id !=', NULL);
+        $sales->where('b.trash', 0);
+        $sales->whereNotIn('d.warehouse_id', [$allow_warehouses]);
+        $sales->orderBy('b.transaction_date','desc');
+        $sales->groupBy('b.id');
+        $sales = $sales->get();
+        $sales = $sales->getResultObject();
 
-        $location = $this->locationModel
-        ->where('trash',0)
-        ->orderBy("name","asc")
-        ->findAll();
-  
-        $data = ([ 
-            "location" => $location,
-            "sales" => $sales,  
-            "db"    => $this->db,
+        $data = ([
+            'sales' => $sales,
+            'db'  => $this->db,
         ]);
 
         return view("audit/sales",$data);
     }
  
     public function sales_manage($id){
-    $sale = $this->saleModel->where("id",$id)->first(); 
+        $sale = $this->saleModel->where("id",$id)->first(); 
     
-    if($sale == NULL){ 
-        $this->session->setFlashdata('message_type', 'error'); 
-        $this->session->setFlashdata('message_content', 'Data tidak ditemukan'); 
-        return redirect()->to(base_url('dashboard')); 
-    } 
+        if($sale == NULL){ 
+            $this->session->setFlashdata('message_type', 'error'); 
+            $this->session->setFlashdata('message_content', 'Data tidak ditemukan'); 
+            return redirect()->to(base_url('dashboard')); 
+        } 
 
         $locations = $this->locationModel
         ->where("trash",0)
@@ -589,6 +620,7 @@ class Audit extends BaseController
         ->findAll();
         
         $contact = $this->contactModel
+        ->orderBy('contacts.name', 'asc')
         ->where("id",$sale->contact_id)->first();
 
         $admin = $this->adminModel

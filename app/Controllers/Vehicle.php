@@ -7,11 +7,13 @@ use App\Controllers\BaseController;
 class Vehicle extends BaseController
 {
     private $vehicleModel;
+    private $session;
+    private $validation;
 
     public function __construct()
     {
         $this->session = \Config\Services::session();
-        $this->db = \Config\Database::connect();
+        $db = \Config\Database::connect();
         $this->validation =  \Config\Services::validation();
 
         $this->vehicleModel = new \App\Models\Vehicle();

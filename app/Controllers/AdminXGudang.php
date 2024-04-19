@@ -94,6 +94,25 @@ class AdminXGudang extends BaseController
           }
         }
       }
+      
+    public function product_transfer(){
+        $data_transfers = $this->warehouseTransferModel->orderBy('warehouse_transfers.id','desc')->findAll();
+        $warehouses = $this->warehouseModel->where("trash",0)->orderBy("warehouses.name","asc")->findAll();
+        
+        $admins = $this->adminModel
+        ->where("active !=",0)
+        ->orderBy("administrators.name","asc")
+        ->findAll();
+
+        $data = ([
+            'db' => $this->db,
+            'admins'   => $admins,
+            'warehouses'  => $warehouses,
+            'data_transfers' => $data_transfers,
+        ]);
+
+        return view('modules/products_transfers', $data);
+    }
 
     public function product_repairs(){
         $products = $this->productModel->where("trash",0)->orderBy("name","asc")->findAll();
@@ -917,10 +936,8 @@ class AdminXGudang extends BaseController
             'data_transfers' => $data_transfers,
         ]);
 
-        return view('modules/products_transfers',$data);
+        return view('modules/products_transfers', $data);
     }
-
-    // Nginput data dasar untuk fitur transfer
 
     public function products_transfers_insert_data_awal(){
         $data_transfers_awal = $this->db->table('warehouse_transfers');

@@ -190,12 +190,10 @@ input[type=file]::file-selector-button:hover {
                         <input type="text" class="form-control" name="alasan_status" placeholder="Alasan Perubahan" required>
                     </div>
                 </div>
-
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Tambah</button>
                 </div>
-
             </div>
         </div>
     </div>
@@ -204,11 +202,10 @@ input[type=file]::file-selector-button:hover {
 <div class="row">
     <div class='col-md-4'>
         <div class='card'>
+            <div class="card-header bg-info">
+                <h5 class="card-title">Data Pembelian</h5>
+            </div>
             <div class="card-body">
-                <h4>
-                    Data Pembelian (PD)
-                </h4>
-                <hr>
                 <b>No. Transaksi</b>
                 <br>
                 <?= $good_buys->number ?>
@@ -300,21 +297,20 @@ input[type=file]::file-selector-button:hover {
     </div>
     <div class="col-md-8">
         <div class="card">
-            <div class="card-body">
-                <h4>
+            <div class="card-header bg-info">
+                <h5 class="card-title">
                     Daftar Barang
-                    
-                    <button style="margin-left: 5px;" type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#modalBuyItemAdd">
+                </h5>
+                <div class="text-right">
+                    <button type="button" class="btn btn-primary btn-sm float-right" data-toggle="modal" data-target="#modalBuyItemAdd">
                         <i class='fa fa-plus'></i> Tambah Data
                     </button>
-                    
-                    <button style="margin-left: 3px; text-decoration: none;" type="button" class="btn btn-warning btn-sm float-right" data-toggle="modal" data-target="#modalAddContact" data-backdrop="static" data-keyboard="false" tabindex="-1"aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <button type="button" class="btn btn-warning btn-sm float-right" data-toggle="modal" data-target="#modalAddContact" data-backdrop="static" data-keyboard="false" tabindex="-1"aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <i class="fa fa-edit"></i> Ubah Data
                     </button>
-                </h4>
-
-                <hr>
-
+                </div>
+            </div>
+            <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
@@ -322,6 +318,11 @@ input[type=file]::file-selector-button:hover {
                                 <th class='text-center'>No</th>
                                 <th class='text-center'>Nama Barang</th>
                                 <th class='text-center'>Kuantitas</th>
+                                <?php 
+                                    $session = \Config\Services::session(); 
+                                    if($session->login_id == 83):?>
+                                    <th class='text-center'>Aksi</th>
+                                <?php endif ?>
                             </tr>
                         </thead>
                         <tbody>
@@ -333,6 +334,15 @@ input[type=file]::file-selector-button:hover {
                                     <td class='text-center'><?= $i++; ?></td>
                                     <td><?= $good_buy_item->product_name ?></td>
                                     <td><?= $good_buy_item->quantity ?></td>
+                                    <?php 
+                                    $session = \Config\Services::session(); 
+                                    if($session->login_id == 83):?>
+                                    <td class="text-center">
+                                        <a href="<?= base_url('products/purchase/deletes/'.$good_buys->id .'/'.$good_buy_item->id) ?>" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                    <?php endif ?>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

@@ -108,8 +108,12 @@
                             echo view("general/sidebar_audit");
                         }elseif(config("Login")->loginRole == 9){
                             echo view("general/sidebar_cashier");
-                        }elseif(config("Login")->loginRole == 10){
-                            echo view("general/sidebar_accounting");
+                        }elseif(config("Login")->loginRole == 10){    
+                            echo view("general/sidebar_sc");
+                        }elseif(config("Login")->loginRole == 11){
+                            echo view("general/sidebar_partner");
+                        }else{
+
                         }
                         
                         ?>

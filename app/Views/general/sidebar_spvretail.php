@@ -1,7 +1,7 @@
 <li class="nav-item">
     <a href="<?= base_url('dashboard'); ?>" class="nav-link">
         <i class="nav-icon fa fa-tachometer-alt"></i>
-        <p>
+        <p> 
             Dashboard
         </p>
     </a>

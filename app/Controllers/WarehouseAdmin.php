@@ -198,6 +198,7 @@ class WarehouseAdmin extends BaseController
     $allow_warehouses = !empty(cek_session($this->session->get('login_id'))['allow_warehouses']) ? cek_session($this->session->get('login_id'))['allow_warehouses'] : '"1","2","3","4","5","7","8","9","10"';
 
     $sales = $this->saleModel
+    ->where("sales.trash", 0)
     ->where("contact_id !=",NULL)
     ->where("payment_id !=",NULL)
     ->where("status >=",2)
@@ -459,6 +460,7 @@ class WarehouseAdmin extends BaseController
         $allow_warehouses = !empty(cek_session($this->session->get('login_id'))['allow_warehouses']) ? cek_session($this->session->get('login_id'))['allow_warehouses'] : '"1","2","3","5","6","7","8","9"';
         
         $sales = $this->saleModel
+        ->where("sales.trash", 0)
         ->where("contact_id !=",NULL)
         ->where("payment_id !=",NULL)
         ->where("Id in(

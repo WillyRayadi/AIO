@@ -166,7 +166,6 @@ Kelola Pengiriman (DO)
                                 <?= ($sumDeliveryItem->quantity == NULL) ? "0" : $sumDeliveryItem->quantity ?>
                                 <?= $thisProduct->unit ?>
                             </td>     
-                                                       
                         </tr>
                         <?php
                     }
@@ -180,122 +179,6 @@ Kelola Pengiriman (DO)
     </div>
 
     <div class="clearfix"></div> 
-
-    <div class="card">
-
-        <div class="card-header bg-info">
-            <h5 class="card-title">Berkas Surat Jalan</h5>
-        </div>
-
-        <div class="card-header p-0 pt-1 border-bottom-0">
-            <ul class="nav nav-tabs" id="deliver-tabs" role="tablist">
-                    <?php $f = 0; ?>
-                    <?php foreach($deliveries as $delivery) : ?>
-                        <?php $f++; ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= ($f == 1) ? "active" : "" ?>" id="deliver-tabs-<?= $f ?>" data-toggle="pill" href="#deliver-tabs-<?= $f ?>-content" role="tab">
-                                Ke-<?= $f ?>
-                            </a>
-                        </li>
-                    <?php endforeach ?>
-
-                    <?php if($sale->sent_date != NULL) : ?>
-                        <li class="nav-item">
-                            <a class="nav-link <?= ($f == 0) ? "active" : "" ?>" id="deliver-tabs-0" data-toggle="pill" href="#deliv-tabs-0-content" role="tab">
-                                Ke-0
-                            </a>
-                        </li>
-                    <?php endif ?>           
-            </ul>
-        </div>
-
-        <div class="card-body">
-            <div class="tab-content" id="deliver-tabs-content">
-                <?php $f = 0; ?>
-                <?php foreach($deliveries as $delivery): ?>
-                    <?php $f++; ?>
-                    <div class="tab-pane fade <?= ($f == 1) ? "show active" : "" ?>" id="deliver-tabs-<?= $f ?>-content" role="tabpanel">
-
-                <?php
-                    if($sale->status < 5){
-                ?>
-                    <div class='alert alert-warning'>
-                        Upload dilakukan setelah status penjualan <b>Dikirim</b>
-                    </div>
-                <?php
-                }else if($sale->status >= 6){
-                ?>
-                <?php
-                if($delivery->shipping_receipt_file != NULL){
-                    ?>
-                    <a href="<?= base_url('public/shipping_receipts/'.$delivery->shipping_receipt_file) ?>" target="_blank" class='btn btn-success btn-block'>
-                        <i class='fa fa-file'></i>
-                        Lihat Berkas
-                    </a>
-                    <?php
-                }
-                ?>
-                <?php
-                    }else{
-                ?>
-
-                <form method="post" action="<?= base_url("warehouse/sales/upload/shipping_receipt") ?>" enctype="multipart/form-data">
-                    <input type='hidden' name='sale' value="<?= $sale->id ?>">
-                    <input type='hidden' name='id' value="<?= $delivery->id ?>">
-                    <div class='form-group'>
-                        <label>Silahkan Upload Surat Jalan Yang Sudah Ditanda Tangani</label>
-                    </div>
-                    <div class="form-group">
-                        <input type='file' name='file' required>
-                        <small class='form-text text-muted'>
-                            Maximal: 1 Mb
-                        </small>
-                    </div>
-                    <div class="form-group">
-                        <button type='submit' class='btn btn-info'>
-                            <i class='fa fa-upload'></i>
-                            Upload Berkas
-                        </button>
-                        <?php
-                        if($delivery->shipping_receipt_file != NULL){
-                            ?>
-                            
-                            <a href="<?= base_url('public/shipping_receipts/'.$delivery->shipping_receipt_file) ?>" target="_blank" class='btn btn-success'>
-                                <i class='fa fa-file'></i>
-                                Lihat Berkas
-                            </a>
-
-                            <a href="<?= base_url('warehouse/sales/'.$delivery->id.'/delete/'.$sale->id.'/shipping_receipt') ?>" class='btn btn-danger' onclick="return confirm('Yakin hapus berkas.?')">
-                                <i class='fa fa-trash'></i>
-                                Hapus Berkas
-                            </a>
-                            
-                            <?php
-                        }
-                        ?>
-
-                    </div>
-                    <div class="form-group">
-                        <small class='form-text text-muted'>
-                            Catatan : 
-                            <br>
-                            Apabila anda upload berkas ulang, maka berkas sebelumnya akan tertimpa
-                        </small>
-                    </div>
-                </form>
-                <?php
-            }
-            ?> 
-
-                    </div>                        
-                <?php endforeach ?>
-            </div>
- 
-        </div> 
- 
-        <!-- Commentar for card footer --> 
-        <div class="card-footer"></div> 
-    </div> 
 </div> 
 </div> 
 

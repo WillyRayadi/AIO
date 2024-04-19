@@ -435,7 +435,7 @@ input[type=file]::file-selector-button:hover {
                                         <button onclick="goodBuyItemEdit('<?= $good_buy_item->id ?>','<?= $good_buy_item->name ?>', <?= $good_buy_item->quantity ?>, <?= $good_buy_item->price ?>)" title="Edit" type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalBuyItemEdit">
                                             <i class='fa fa-edit'></i>
                                         </button>
-                                        <a href="<?= base_url('products/purchase/delete/' . $good_buys->id . '/' .  $good_buy_item->id) ?>" onclick="return confirm('Yakin ingin menghapus <?= $good_buy_item->name ?>.?')" class="btn btn-danger text-white btn-sm" title="Delete Purchase">
+                                        <a href="<?= base_url('products/purchase/deletes/' . $good_buys->id . '/' .  $good_buy_item->id) ?>" onclick="return confirm('Yakin ingin menghapus <?= $good_buy_item->name ?>.?')" class="btn btn-danger text-white btn-sm" title="Delete Purchase">
                                             <i class='fa fa-trash'></i>
                                         </a>
                                     </td>

@@ -1,8 +1,7 @@
-<?= $this->extend("general/template") ?>
+<?= $this->extend("general/template") ?> 
 <?= $this->section("page_title") ?>
 Kelola Penjualan (SO)
 <?= $this->endSection() ?>
-
 
 <?= $this->section("page_breadcrumb") ?>
 <li class="breadcrumb-item"><a href="<?= base_url('/dashboard'); ?>">Home</a></li>
@@ -28,7 +27,7 @@ Kelola Penjualan (SO)
                     <div class="form-group">
                         <label for="phone">No. Telepon</label>
                         <input type="number" class="form-control" id="phone" name="phone" placeholder="No. Telepon" required>
-                    </div>
+                    </div>               
                     <div class="form-group">
                         <label for="name">Nama</label>
                         <input type="text" class="form-control" id="name" name="name" placeholder="nama" required>
@@ -48,7 +47,7 @@ Kelola Penjualan (SO)
                     <div class="form-group">
                         <label for="address">Alamat</label>
                         <textarea class="form-control" name="address" id="address" rows="3" placeholder="alamat" required></textarea>
-                    </div>
+                    </div>                    
                 </div>
                 <div class="modal-footer justify-content-between">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
@@ -72,11 +71,11 @@ Kelola Penjualan (SO)
                     </button>
                 </div>
                 <div class="modal-body">
-                    <input type='hidden' name='sale' value="<?= $sale->id ?>">
-                    <input type='hidden' name='warehouse' value="<?= $sale->warehouse_id ?>">
-                    <input type='hidden' name='item' id="editItemID">
+                    <input type='hidden' name='sale' value="<?= $sale->id ?>">                                        
+                    <input type='hidden' name='warehouse' value="<?= $sale->warehouse_id ?>">                                 
+                    <input type='hidden' name='item' id="editItemID">                                        
                     <input type='hidden' name='product' id="editItemProductID">
-
+                    
                     <div class="form-group">
                         <label>Nama Barang</label>
                         <div id="textEditItemName"></div>
@@ -115,14 +114,14 @@ Kelola Penjualan (SO)
                 <div class="card-body">
                     <input type='hidden' name='id' value="<?= $sale->id ?>">
                     <div class="row">
-
+                        
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>No. Transaksi</label>
-                                <input type='text' value="<?= $sale->number ?>" readonly class='form-control' placeholder="<?= "SO/" . date("y") . "/" . date("m") . "/[auto]" ?>">
-                            </div>
-                        </div>
-
+                                <input type='text' value="<?= $sale->number ?>" readonly class='form-control' placeholder="<?= "SO/".date("y")."/".date("m")."/[auto]" ?>">
+                            </div>                            
+                        </div> 
+                      
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Cabang Toko</label>
@@ -131,33 +130,31 @@ Kelola Penjualan (SO)
                         </div>
 
                         <div class="col-md-4">
-                            <div class="form-group">
-                                <label>Tag</label>
-                                <select name='tags[]' class="select2bs4" id="tagSelect" multiple="multiple" style="width: 100%;">
-                                    <?php
-                                    foreach ($tags as $tag) {
-                                        $thisTagSelected = "";
-                                        if ($sale->tags) :
-                                            $saleTagsExplode = explode("#", $sale->tags);
+                        <div class="form-group">
+                            <label>Tag</label>
+                            <select name='tags[]' class="select2bs4" id="tagSelect" multiple="multiple" style="width: 100%;">
+                            <?php
+                            foreach($tags as $tag){
+                                $saleTagsExplode = explode("#",$sale->tags);
 
-                                            foreach ($saleTagsExplode as $saleTag) {
-                                                if ($tag->name == $saleTag) {
-                                                    $thisTagSelected = "selected";
-                                                } else {
-                                                    if ($thisTagSelected === "selected") {
-                                                        $thisTagSelected = "selected";
-                                                    } else {
-                                                        $thisTagSelected = "";
-                                                    }
-                                                }
-                                            }
-                                        endif;
-                                        echo "<option value='" . $tag->name . "' $thisTagSelected>" . $tag->name . "</option>";
+                                $thisTagSelected = "";
+                                foreach($saleTagsExplode as $saleTag){
+                                    if($tag->name == $saleTag){
+                                        $thisTagSelected = "selected";
+                                    }else{
+                                        if($thisTagSelected === "selected"){
+                                            $thisTagSelected = "selected";
+                                        }else{
+                                            $thisTagSelected = "";
+                                        }
                                     }
-                                    ?>
-                                </select>
-                            </div>
+                                }
+                                echo"<option value='".$tag->name."' $thisTagSelected>".$tag->name."</option>";
+                            }
+                            ?>
+                            </select>
                         </div>
+                    </div>
                     </div>
 
                     <div class="row">
@@ -173,13 +170,13 @@ Kelola Penjualan (SO)
                                 <select name='contact' id='contactSelect' required class='form-control select2bs4'>
                                     <option value="">--Pilih Pelanggan--</option>
                                     <?php
-                                    foreach ($contacts as $contact) {
-                                        if ($contact->id == $sale->contact_id) {
+                                    foreach($contacts as $contact){
+                                        if($contact->id == $sale->contact_id){
                                             $selectedContact = "selected";
-                                        } else {
+                                        }else{
                                             $selectedContact = "";
                                         }
-                                        echo "<option value='" . $contact->id . "' $selectedContact>" . $contact->name . " | " . $contact->phone . "</option>";
+                                        echo"<option value='".$contact->id."' $selectedContact>".$contact->name." | ".$contact->phone."</option>";
                                     }
                                     ?>
                                 </select>
@@ -190,20 +187,20 @@ Kelola Penjualan (SO)
                             </div>
                             <div class="form-group">
                                 <label>Area Pengiriman</label>
-                                <select name='location_id' required class='form-control select2bs4'>
+                                 <select name='location_id' required class='form-control select2bs4'>
                                     <option value="">--Pilih Area--</option>
-                                    <?php
-                                    foreach ($locations as $location) {
-                                        if ($location->id == $sale->location_id) {
+                                    <?php 
+                                    foreach($locations as $location){
+                                        if($location->id == $sale->location_id){
                                             $selectedLocation = "selected";
-                                        } else {
+                                        }else{
                                             $selectedLocation = "";
                                         }
-                                        echo "<option value='" . $location->id . "' $selectedLocation>" . $location->name . "</option>";
+                                        echo"<option value='".$location->id."' $selectedLocation>".$location->name."</option>";
                                     }
                                     ?>
                                 </select>
-                            </div>
+                            </div>  
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
@@ -211,59 +208,41 @@ Kelola Penjualan (SO)
                                 <select name='payment' id='paymentSelect' required class='form-control'>
                                     <option value="">--Pilih Metode Pembayaran--</option>
                                     <?php
-                                    foreach ($payments as $payment) {
-                                        if ($payment->id == $sale->payment_id) {
+                                    foreach($payments as $payment){
+                                        if($payment->id == $sale->payment_id){
                                             $paymentSelected = "selected";
-                                        } else {
+                                        }else{
                                             $paymentSelected = "";
                                         }
-                                        echo "<option value='" . $payment->id . "' $paymentSelected>" . $payment->name . "</option>";
+                                        echo"<option value='".$payment->id."' $paymentSelected>".$payment->name."</option>";
                                     }
                                     ?>
                                 </select>
                             </div>
-
-
+                            
                             <div class="form-group">
                                 <label>Tgl. Transaksi</label>
                                 <input type='date' id="dateField" value="<?= $sale->transaction_date ?>" name='transaction_date' class='form-control' required>
-                            </div>
-
+                            </div>  
+                            
                             <div class="form-group">
                                 <label>Tgl. Jatuh Tempo</label>
                                 <input type='date' value="<?= $sale->expired_date ?>" id="expiredField" name='expired_date' class='form-control' required>
-                            </div>
-
-                        </div>
-                        <div class="col-md-4">
+                            </div>  
+                                
+                        </div>                        
+                        <div class="col-md-4">   
                             <div class="form-group">
-                                <label>Memo / Catatan</label>
-                                <textarea class='form-control text-uppercase' placeholder="Memo / Catatan" name='sales_notes'><?= $sale->sales_notes ?></textarea>
+                                <label>Memo / Catatan</label> 
+                               <textarea class='form-control text-uppercase' placeholder="Memo / Catatan" name='sales_notes'><?= $sale->sales_notes ?></textarea>
                             </div>
-
-                            <div class="form-group">
-                                <label>Gudang</label>
-                                <select name='warehouse' class='form-control select2bs4' required>
-                                    <option value="">--Pilih Gudang--</option>
-                                    <?php
-                                    foreach ($branch as $item) {
-                                        if ($item->id == $sale->warehouse_id) {
-                                            $selected = "selected";
-                                        } else {
-                                            $selected = "";
-                                        }
-                                        echo "<option value='" . $item->id . "' $selected>" . $item->name_city . "</option>";
-                                    }
-                                    ?>
-                                </select>
-                            </div>
-
+                          
                         </div>
                     </div>
                 </div>
-
+              
                 <div class="card-footer">
-                    <a href="<?= base_url('sales/sales/' . $sale->id . '/delete') ?>" onclick="return confirm('Yakin hapus penjualan (SO).?')" class='btn btn-danger float-right ml-2'>
+                    <a href="<?= base_url('sales/sales/'.$sale->id.'/delete') ?>" onclick="return confirm('Yakin hapus penjualan (SO).?')" class='btn btn-danger float-right ml-2'>
                         <i class='fa fa-trash'></i>
                         Hapus
                     </a>
@@ -296,22 +275,22 @@ Kelola Penjualan (SO)
                                 <select name='product' required class="select2bs4" id="productSelect" style="width: 100%;">
                                     <option value="">--Pilih Barang--</option>
                                     <?php
-                                    foreach ($products as $product) {
+                                    foreach($products as $product){
                                         // $itemExist = $db->table("sale_items");
                                         // $itemExist->where("sale_id",$sale->id);
                                         // $itemExist->where("product_id",$product->id);
                                         // $itemExist = $itemExist->get();
                                         // $itemExist = $itemExist->getResultObject();
-
+                                        
                                         // if($itemExist == NULL){
                                         // }else{
                                         // }
-                                        echo "<option value='" . $product->id . "'>" . $product->name . "</option>";
+                                        echo "<option value='".$product->id."'>".$product->name."</option>";
                                     }
                                     ?>
                                 </select>
                             </div>
-                            <!--
+<!--
                             <div class="form-group">
                                 <b>Bundling Product</b>
                                 <div id='ProductBundlingSelect'></div>
@@ -319,10 +298,20 @@ Kelola Penjualan (SO)
 
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
+                         <div class="form-group">
                                 <label>Gudang</label>
                                 <select name='warehouse' class='form-control' id="warehouse" required>
                                     <option value="">--Pilih Gudang--</option>
+                                    <?php 
+                                    // foreach($warehouses as $warehouse){
+                                    //     if($warehouse->id == $sale->warehouse_id){
+                                    //         $selectedwarehouse = "selected";
+                                    //     }else{
+                                    //         $selectedwarehouse = "";
+                                    //     }
+                                    //     echo"<option value='".$warehouse->id."' $selectedwarehouse>".$warehouse->name."</option>";
+                                    // }
+                                    ?>
                                 </select>
                             </div>
                         </div>
@@ -339,10 +328,10 @@ Kelola Penjualan (SO)
                                 <select required name='price' class='form-control' id='productPriceSelect'>
                                     <option value=''>--Pilih Barang Terlebih Dahulu--</option>
                                 </select>
-                            </div>
+                            </div> 
                         </div>
 
-
+                      
                     </div>
 
 
@@ -350,10 +339,10 @@ Kelola Penjualan (SO)
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>Tulis Harga (Custom)</label>
-                                <input type='number' name='custom_price' id="customPrice" readonly="true" class='form-control' placeholder='Pilih Barang Terlebih Dahulu'>
+                                <input type='number' name='custom_price' id="customPrice" readonly="true" class='form-control' placeholder='Pilih Barang Terlebih Dahulu'>                            
                             </div>
                         </div>
-
+                        
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label>PPN</label>
@@ -368,27 +357,27 @@ Kelola Penjualan (SO)
                             <div class="form-group">
                                 <label>Promo / Gift</label>
                                 <select name='promo' id="productPromoSelect" class='form-control'>
-                                    <option value="">--Pilih Barang Terlebih Dahulu--</option>
+                                    <option value="">--Pilih Barang Terlebih Dahulu--</option>                                    
                                 </select>
                             </div>
-                        </div>
+                        </div> 
                     </div>
 
                     <div class="row">
                         <div class="col-md-12">
                             <div class="form-group">
-                                <?php if ($sale->contact_id == NULL) : ?>
-                                <?php else : ?>
-                                    <button id="addItemBtn" type='submit' class='btn btn-info'>
-                                        <i class='fa fa-plus'></i>
-                                        Tambah Barang Ke Dalam Penjualan
-                                    </button>
+                                <?php if($sale->contact_id == NULL) : ?>
+                                        <?php else: ?>
+                                            <button id="addItemBtn" type='submit' class='btn btn-info'>
+                                            <i class='fa fa-plus'></i>
+                                            Tambah Barang Ke Dalam Penjualan
+                                            </button>
                                 <?php endif ?>
                             </div>
                         </div>
                     </div>
-
                 </form>
+
                 <hr>
 
                 <div class="table-responsive">
@@ -403,30 +392,25 @@ Kelola Penjualan (SO)
                                 <th class='text-center'>Diskon</th>
                                 <th class='text-center'>Jumlah</th>
                                 <th class='text-center'>Status</th>
-                                <!-- <th class='text-center'>Opsi</th> -->
+                                <th class='text-center'>Opsi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php
                             $sumPrice = 0;
-                            $isItemExist = false;
-                            foreach ($items as $item) {
+                            foreach($items as $item){
                                 $thisProduct = $db->table("products");
-                                $thisProduct->where("id", $item->product_id);
+                                $thisProduct->where("id",$item->product_id);
                                 $thisProduct = $thisProduct->get();
                                 $thisProduct = $thisProduct->getFirstRow();
-
+                                
                                 $thisWarehouse = $db->table('product_stocks');
                                 $thisWarehouse->select('warehouses.name');
-                                $thisWarehouse->join('warehouses', 'product_stocks.warehouse_id = warehouses.id', 'left');
-                                $thisWarehouse->where("product_stocks.sale_item_id", $item->id);
+                                $thisWarehouse->join('warehouses','product_stocks.warehouse_id = warehouses.id','left');
+                                $thisWarehouse->where("product_stocks.sale_item_id",$item->id);
                                 $thisWarehouse = $thisWarehouse->get();
                                 $thisWarehouse = $thisWarehouse->getFirstRow();
-
-                                if ($thisProduct->id) {
-                                    $isItemExist = true;
-                                }
-                            ?>
+                                ?>
                                 <tr>
                                     <td><?= $thisProduct->name ?></td>
                                     <td class='text-center'><?= $thisWarehouse->name ?></td>
@@ -434,34 +418,34 @@ Kelola Penjualan (SO)
                                         <?= $item->quantity ?> <?= $thisProduct->unit ?>
                                         &nbsp;
                                         <?php
-                                        $itemNameForEditQty = str_replace("'", "`", $thisProduct->name);
-                                        $itemNameForEditQty = str_replace("\"", "``", $itemNameForEditQty);
+                                        $itemNameForEditQty = str_replace("'","`",$thisProduct->name);
+                                        $itemNameForEditQty = str_replace("\"","``",$itemNameForEditQty);
                                         ?>
-                                        <?php if ($item->need_approve == 0) : ?>
+                                        <?php if($item->need_approve == 0) : ?>
                                         <?php else : ?>
-                                            <?php if ($item->approve_status == 1) : ?>
+                                            <?php if($item->approve_status == 1) : ?>
                                             <?php else : ?>
-                                                <a href="javascript:void(0)" onclick="editQty('<?= $item->id ?>','<?= $item->product_id ?>','<?= $itemNameForEditQty ?>','<?= $item->quantity ?>')" data-toggle="modal" data-target="#modalEditQtyItem" class='text-success'>
-                                                    <i class='fa fa-edit'></i>
-                                                </a>
+                                            <a href="javascript:void(0)"  onclick="editQty('<?= $item->id ?>','<?= $item->product_id ?>','<?= $itemNameForEditQty ?>','<?= $item->quantity ?>')" data-toggle="modal" data-target="#modalEditQtyItem" class='text-success'>
+                                                <i class='fa fa-edit'></i>
+                                            </a>
                                             <?php endif ?>
                                         <?php endif ?>
                                     </td>
-                                    <td class='text-right'>(<?= $item->price_level ?>) Rp. <?= number_format($item->price, 0, ",", ".") ?></td>
+                                    <td class='text-right'>(<?= $item->price_level ?>) Rp. <?= number_format($item->price,0,",",".") ?></td>                                
                                     <td>
-                                        <?php
-                                        if ($item->promo_id == 0) {
-                                            echo "--Tanpa Promo--";
-                                            $discountItem = 0;
-                                        } else {
-                                            $thisPromo = $db->table("promos");
-                                            $thisPromo->where("id", $item->promo_id);
-                                            $thisPromo = $thisPromo->get();
-                                            $thisPromo = $thisPromo->getFirstRow();
-
-                                            echo "(" . $thisPromo->code . ") &nbsp;" . $thisPromo->details;
-                                        }
-                                        ?>
+                                    <?php
+                                    if($item->promo_id == 0){
+                                        echo "--Tanpa Promo--";
+                                        $discountItem = 0;
+                                    }else{
+                                        $thisPromo = $db->table("promos");
+                                        $thisPromo->where("id",$item->promo_id);
+                                        $thisPromo = $thisPromo->get();
+                                        $thisPromo = $thisPromo->getFirstRow();
+    
+                                        echo "(".$thisPromo->code.") &nbsp;".$thisPromo->details;                                    
+                                    }
+                                    ?>
                                     </td>
                                     <td class='text-right'><?= $item->discount ?>%</td>
                                     <td class='text-right'>
@@ -471,43 +455,40 @@ Kelola Penjualan (SO)
                                         $sumDiscountCalculate = $thisPriceCount - $discountCalculate;
                                         $taxCalculate = $sumDiscountCalculate * $item->tax / 100;
                                         $sumPriceCalculate = $sumDiscountCalculate;
-
-                                        echo "Rp. " . number_format($sumPriceCalculate, 0, ",", ".");
-
+    
+                                        echo "Rp. ".number_format($sumPriceCalculate,0,",",".");
+    
                                         $sumPrice += $sumPriceCalculate;
                                         ?>
                                     </td>
                                     <td class='text-center'>
                                         <?php
-                                        if ($item->need_approve != 0) {
-                                            if ($item->approve_status == 0) {
-                                                echo "<span class='badge badge-warning'>Menunggu Persetujuan <br>" . config("App")->needApprovers[$item->need_approve] . "</span>";
-                                            } else {
-                                                echo "<span class='badge badge-" . config("App")->product_price_status_colors[$item->approve_status] . "'>" . config("App")->product_price_statuses[$item->approve_status] . " <br>" . config("App")->needApprovers[$item->need_approve] . "</span>";
+                                        if($item->need_approve != 0){
+                                            if($item->approve_status == 0){
+                                                echo"<span class='badge badge-warning'>Menunggu Persetujuan <br>".config("App")->needApprovers[$item->need_approve]."</span>";
+                                            }else{
+                                                echo"<span class='badge badge-".config("App")->product_price_status_colors[$item->approve_status]."'>".config("App")->product_price_statuses[$item->approve_status]." <br>".config("App")->needApprovers[$item->need_approve]."</span>";
                                             }
                                         }
                                         ?>
                                     </td>
-                                    <!-- <td class='text-center'>
-                                        <a href="<?= base_url('sales/sales/' . $sale->id . '/item/' . $item->id . '/delete') ?>" class='btn btn-danger btn-sm' onclick="return confirm('Yakin hapus <?= $itemNameForEditQty ?> dari daftar penjualan.?')" title="Hapus">
+                                    <td class='text-center'>                                  
+                                        <a href="<?= base_url('sales/sales/'.$sale->id.'/item/'.$item->id.'/delete') ?>" class='btn btn-danger btn-sm' onclick="return confirm('Yakin hapus <?= $itemNameForEditQty ?> dari daftar penjualan.?')" title="Hapus">
                                             <i class='fa fa-trash'></i>
                                         </a>
-                                    </td> -->
+                                    </td>
                                 </tr>
-                            <?php
+                                <?php
                             }
                             ?>
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th class='text-right' colspan='7'>TOTAL</th>
-                                <th class='text-right'>Rp. <?= number_format($sumPrice, 0, ",", ".") ?></th>
+                                <th class='text-right' colspan='8'>TOTAL</th>
+                                <th class='text-right'>Rp. <?= number_format($sumPrice,0,",",".") ?></th>
                             </tr>
                         </tfoot>
                     </table>
-                    <?php if ($sale->is_saved == 0 && $sale->contact_id != NULL && $isItemExist == true) : ?>
-                        <a href="<?= base_url("sales/so/$sale->id/save") ?>" class="btn btn-primary float-right">Simpan Penjualan</a>
-                    <?php endif; ?>
                 </div>
             </div>
             <div class="card-footer"></div>
@@ -520,147 +501,135 @@ Kelola Penjualan (SO)
 <?= $this->section("page_script") ?>
 
 <script type="text/javascript">
-    $("#contactSelect").change(function() {
-        id = $(this).val()
 
-        $.ajax({
-            url: "<?= base_url('sales/ajax/sales/add/contact/data') ?>",
-            data: {
-                id: id
-            },
-            type: "POST",
-            success: function(response) {
-                response = JSON.parse(response)
-                $("#addressField").html(response.address)
-                $("#referenceField").val(response.no_reference)
-            }
-        })
+$("#contactSelect").change(function(){
+    id = $(this).val()
+
+    $.ajax({
+        url : "<?= base_url('sales/ajax/sales/add/contact/data') ?>",
+        data : { id : id },
+        type : "POST",
+        success : function(response){
+            response = JSON.parse(response)
+            $("#addressField").html(response.address)
+            $("#referenceField").val(response.no_reference)
+        }
     })
+})
 
-    $("#paymentSelect").change(function() {
-        id = $(this).val()
+$("#paymentSelect").change(function(){
+    id = $(this).val()
 
-        $.ajax({
-            url: "<?= base_url('sales/ajax/sales/add/expired/data') ?>",
-            data: {
-                id: id
-            },
-            type: "POST",
-            success: function(response) {
-                $("#expiredField").val(response)
-            }
-        })
+    $.ajax({
+        url : "<?= base_url('sales/ajax/sales/add/expired/data') ?>",
+        data : { id : id },
+        type : "POST",
+        success : function(response){
+            $("#expiredField").val(response)
+        }
     })
+})
+
 </script>
 
 <script>
-    $("#productSelect").change(function() {
+
+    $("#productSelect").change(function(){
         $.ajax({
             url: "<?= base_url('sales/ajax/sale/product/stocks') ?>",
             type: "post",
             data: {
-                product: $(this).val(),
-                warehouse: <?= $sale->warehouse_id ?>
-            },
+                product     : $(this).val(),
+            }, 
             success: function(html) {
-                console.log(html);
-                myText = html.split("~");
-                stocks = parseInt(myText[0]);
+            // console.log(html);
+            myText = html.split("~");
+            stocks = parseInt(myText[0])
 
-                // console.log(stocks);
+            // $("#productQtyInput").attr("max",stocks)
+            $("#productQtyInput").attr("min",1)
+            
+            // if(stocks <= 0){
+            //     $("#addItemBtn").attr("disabled",true)
+            //     $("#productQtyInput").val(0)
+            // }else{
+            //     $("#addItemBtn").attr("disabled",false)                
+            //     $("#productQtyInput").val(1)
+            // }
 
-                // $("#productQtyInput").attr("max",stocks)
-                $("#productQtyInput").attr("min", 1)
-
-                // if(stocks <= 0){
-                //     $("#addItemBtn").attr("disabled",true)
-                //     $("#productQtyInput").val(0)
-                // }else{
-                //     $("#addItemBtn").attr("disabled",false)                
-                //     $("#productQtyInput").val(1)
-                // }
-
-                if (stocks > 10) {
-                    stocks = "10+"
-                } else {
-                    stocks = stocks
-                }
-
-                // if (empty($(this).val())) {
-                //     $("#totalStock").val("Pilih Barang Terlebih Dahulu");
-                // } else {
-                //     $("#totalStock").val(stocks + " " + myText[1]);
-                // }
-                // if(stocks == 0) {}
-
-                $("#productStockPreview").html(stocks + " " + myText[1]);
+            if(stocks > 10){
+                stocks = "10+"
+            }else{
+                stocks = stocks
             }
-        })
 
-        load_warehouse($(this).val(), <?= $sale->warehouse_id ?>);
+            $("#productStockPreview").html(stocks+" "+myText[1])
+
+        }
+    })
+
+        load_warehouse($(this).val(),'');
 
         $.ajax({
             url: "<?= base_url('sales/ajax/sale/product/prices') ?>",
             type: "post",
             data: {
-                product: $(this).val(),
+                product     : $(this).val(),
             },
             success: function(html) {
-                // console.log(html);
-                $("#productPriceSelect").html(html)
-            }
-        })
+            // console.log(html);
+            $("#productPriceSelect").html(html)
+        }
+    })
 
         $.ajax({
             url: "<?= base_url('sales/ajax/sale/product/promos') ?>",
             type: "post",
             data: {
-                product: $("#productSelect").val(),
-                price_level: $(this).val()
+                product     : $("#productSelect").val(), price_level : $(this).val()
             },
             success: function(html) {
-                // console.log(html);
-                $("#productPromoSelect").html(html)
-            }
-        })
-
-        $("#customPrice").attr("readonly", false)
-        $("#customPrice").attr("placeholder", "Silahkan tulis harga di sini")
+            // console.log(html);
+            $("#productPromoSelect").html(html)
+        }
     })
 
-    $("#productPriceSelect").change(function() {
+        $("#customPrice").attr("readonly",false)
+        $("#customPrice").attr("placeholder","Silahkan tulis harga di sini")
+    })
+
+    $("#productPriceSelect").change(function(){    
         $.ajax({
             url: "<?= base_url('sales/ajax/sale/product/promos') ?>",
             type: "post",
             data: {
-                product: $("#productSelect").val(),
-                price_level: $(this).val()
+                product     : $("#productSelect").val(), price_level : $(this).val()
             },
             success: function(html) {
-                // console.log(html);
-                $("#productPromoSelect").html(html)
-            }
-        })
-
-        $("#customPrice").attr("readonly", false)
-        $("#customPrice").attr("placeholder", "Silahkan tulis harga di sini")
+            // console.log(html);
+            $("#productPromoSelect").html(html)
+        }
     })
 
-    function editQty(item, product, name, qty) {
+        $("#customPrice").attr("readonly",false)
+        $("#customPrice").attr("placeholder","Silahkan tulis harga di sini")
+    })
+
+    function editQty(item, product, name, qty){
         $("#editItemID").val(item)
         $("#editItemProductID").val(product)
         $("#textEditItemName").html(name)
         $("#editItemQty").val(qty)
     }
 
-    function load_warehouse(id_product, warehouse_id) {
+    function load_warehouse(id_product,warehouse_id){
         $.ajax({
             url: "<?= base_url('sales/ajax/sale/product/all') ?>",
             type: "post",
             data: {
-                product: id_product,
-                warehouse_id: warehouse_id,
-            },
+                product     : id_product,
+                warehouse_id : warehouse_id,
+            }, 
             success: function(html) {
 
 
@@ -670,6 +639,7 @@ Kelola Penjualan (SO)
             }
         })
     }
+
 </script>
 
 <script>

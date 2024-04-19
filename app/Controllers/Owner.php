@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
 helper('tools_helper');
-
 use Hermawan\DataTables\DataTable;
 
 class Owner extends BaseController
@@ -13,44 +11,46 @@ class Owner extends BaseController
     protected $db;
     protected $adminModel;
 
-    protected $productCategoriesModel;
-    protected $productModel;
-    protected $productStocksModel;
-    protected $productRepairModel;
-    protected $productLocationModel;
-    protected $productStockModel;
-    protected $codeModel;
-    protected $customerModel;
-    protected $warehouseModel;
-    protected $promoModel;
-    protected $contactModel;
-    protected $saleModel;
-    protected $saleItemModel;
-    protected $tagModel;
-    protected $paymentModel;
-    protected $vehicleModel;
-    protected $addressModel;
-    protected $locationModel;
-    protected $alasanModel;
-    protected $deliveryModel;
-    protected $deliveryItemModel;
-    protected $statusModel;
-    protected $buysModel;
-    protected $buyItemsModel;
-    protected $insentifModel;
-    protected $staggingDOModel;
-    protected $productPriceModel;
-    protected $branchModel;
+    private $productCategoriesModel;
+    private $productModel;
+    private $productStocksModel;
+    private $productRepairModel;
+    private $productLocationModel;
+    private $productStockModel;
+    private $codeModel;
+    private $customerModel;
+    private $warehouseModel;
+    private $promoModel;
+    private $contactModel;
+    private $saleModel;
+    private $saleItemModel;
+    private $tagModel;
+    private $paymentModel;
+    private $vehicleModel;
+    private $addressModel;
+    private $locationModel;
+    private $alasanModel;
+    private $deliveryModel;
+    private $deliveryItemModel;
+    private $statusModel;
+    private $buysModel;
+    private $buyItemsModel;
+    private $insentifModel;
+    private $staggingDOModel;
+    private $branchModel;
+    private $saleReturModel;
+    private $saleReturnItemModel;
+    private $productPriceModel;
 
-    public function __construct()
-    {
+
+    public function __construct(){
         $this->session = \Config\Services::session();
 
         $this->db = \Config\Database::connect();
         $this->validation =  \Config\Services::validation();
-
+        
         $this->adminModel = new \App\Models\Administrator();
-
+        
         $this->staggingDOModel = new \App\Models\staggingDO();
         $this->productCategoriesModel = new \App\Models\Category();
         $this->productModel = new \App\Models\Product();
@@ -78,22 +78,260 @@ class Owner extends BaseController
         $this->buysModel = new \App\Models\Buy();
         $this->buyItemsModel = new \App\Models\BuyItem();
         $this->insentifModel = new \App\Models\Insentif();
-        $this->branchModel = new \App\Models\Branch();
+        $this->branchModel = model('App\Models\Branch');
+        $this->saleReturnItemModel = new \App\Models\saleReturnItem();
+        $this->saleReturModel = new \App\Models\saleRetur();
+        
+        
 
-        if ($this->session->login_id == null) {
+        if($this->session->login_id == null){            
             $this->session->setFlashdata('msg', 'Maaf, Silahkan login terlebih dahulu!');
-            header("location:" . base_url('/'));
+            header("location:".base_url('/'));
             exit();
-        } else {
-            if (config("Login")->loginRole != 7) {
-                header("location:" . base_url('/dashboard'));
+        }else{
+            if(config("Login")->loginRole != 7){
+                header("location:".base_url('/dashboard'));
                 exit();
             }
         }
     }
+    
+    public function sales_return(){
+        $warehouses = $this->warehouseModel->where('warehouses.trash', 0)->orderBy('warehouses.name')->get()->getFirstRow();
+        
+        $getReturnSales = [$this->session->login_id, "104"];
 
-    public function approve_do()
-    {
+        $stocks = $this->saleReturModel
+        ->select([
+            'return_sales.id',
+            'return_sales.date',
+            'sales.id as sale_id',
+            'sales.contact_id',
+            'return_sales.number as retur_number',
+            'return_sales.alasan',
+            'sales.number as sale_number',
+        ])
+        ->join('sales','return_sales.sale_id = sales.id', 'left')
+        ->where('sales.admin_id', $this->session->login_id)
+        ->orderBy('return_sales.id','desc')
+        ->get()->getResultObject();
+        
+        $sales = $this->saleModel
+        ->where('admin_id', $this->session->login_id)
+        ->where("status >=",4)
+        ->orderBy('sales.id','desc')
+        ->get()->getResultObject();
+
+        $data = ([
+            "sales" => $sales,
+            "stocks" => $stocks,
+            "warehouses" => $warehouses,
+        ]);
+
+        return view('owner/sales_returns', $data);    
+    }
+
+    public function sales_return_add(){
+        $sales_retur = $this->db->table('return_sales');
+        $sales_retur->selectMax('id');
+        $sales_retur = $sales_retur->get();
+        $sales_retur = $sales_retur->getFirstRow();
+
+        $sales_retur = $sales_retur->id;
+        $id = $sales_retur + 1;
+        $number_retur = "SR/".date("y")."/".$id;
+
+        $date = $this->request->getPost('date');
+        $alasan = $this->request->getPost('alasan');
+        $sale_id = $this->request->getPost('sale_id');
+
+        $this->saleReturModel->insert([
+            'date' => $date,
+            'alasan' => $alasan,
+            'sale_id' => $sale_id,
+            'number' => $number_retur,
+            'admin_id' => $this->session->login_id,
+        ]);
+
+        $this->session->setFlashdata('message_type', 'success');
+        $this->session->setFlashdata('message_content', "Data Retur Berhasil Ditambahkan");
+
+        return redirect()->to(base_url('owner/sales/return'));
+    }
+
+    public function sales_return_manage($id){
+        $data_retur = $this->saleReturModel->where(['return_sales.id' => $id])->first();
+        
+        if($data_retur != NULL) {
+            $goods = $this->productModel->where('trash',0)->orderBy('products.name','asc')->findAll();
+            $warehouses = $this->warehouseModel->where('trash', 0)->orderBy('warehouses.name','asc')->findAll();
+            
+            $good_retur = $this->saleReturModel
+            ->select([
+                'return_sales.id',
+                'sales.number as sales_number',
+                'return_sales.date as retur_date',
+                'administrators.name as admin_name',
+                'return_sales.number as retur_number',
+                'contacts.name as contact_name','alasan',
+            ])
+            ->join('sales', 'return_sales.sale_id = sales.id', 'left')
+            ->join('contacts', 'sales.contact_id = contacts.id', 'left')
+            ->join('administrators', 'return_sales.admin_id = administrators.id', 'left')
+            ->where('return_sales.id', $id)->get()->getFirstRow();
+            
+            $sales = $this->saleModel->orderBy('sales.id','desc')->get()->getFirstRow();
+            
+            $items = $this->saleItemModel
+            ->select([
+                'sale_items.id',
+                'sale_items.quantity',
+                'sale_items.product_id',
+                'products.name as product_name',    
+            ])
+            ->join('products', 'sale_items.product_id = products.id', 'left')
+            ->where('sale_items.sale_id', $data_retur->sale_id)
+            ->orderBy('sale_items.id', 'desc')->get()->getResultObject();
+            
+            $retur_item = $this->saleReturnItemModel
+            ->select([
+                'return_item.id',
+                'return_item.quantity',
+                'return_item.retur_id',
+                'return_item.sale_item_id',
+                'products.name as product_name',
+                'warehouses.name as warehouse_name',
+            ])
+            ->join('products', 'return_item.product_id = products.id', 'left')
+            ->join('warehouses', 'return_item.warehouse_id = warehouses.id','left')
+            ->where('return_item.retur_id', $id)
+            ->get()->getResultObject();
+            
+            $data = ([
+                'db' => $this->db,
+                'goods' => $goods,
+                'warehouses' => $warehouses,
+                'good_retur' => $good_retur,
+                'sales' => $sales,
+                'items' => $items,
+                'retur_item' => $retur_item,
+            ]);
+            
+            return view('owner/sales_returns_manage', $data);
+            
+        }else{
+            $this->session->setFlashdata('message_type', 'success');
+            $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
+            return redirect()->to(base_url('owner/sales/return'));
+        }
+        
+    }
+
+    public function sales_return_add_items(){
+        $date = $this->request->getPost('date');
+        $retur_id = $this->request->getPost('retur_id');
+        $sale_item_id = $this->request->getPost('sale_item_id');
+        $quantity = $this->request->getPost('quantity');
+        $warehouses = $this->request->getPost('warehouses');
+        
+        $saleItems = $this->saleItemModel->where('sale_items.id', $sale_item_id)->get()->getFirstRow();
+        
+        $this->saleReturnItemModel->insert([
+            'quantity'   => $quantity,
+            'retur_id'   => $retur_id,
+            'warehouse_id' => $warehouses,
+            'sale_item_id' => $sale_item_id,
+            'product_id' => $saleItems->product_id,
+        ]);
+        
+        $returID = $this->saleReturnItemModel->getInsertID();
+        
+        $this->productStockModel->insert([
+            'date' => $date,
+            'product_id' => $saleItems->product_id,
+            'quantity'  => $quantity,
+            'product_return_id' => $returID,
+            "warehouse_id" => $warehouses,
+        ]);
+        
+        $this->session->setFlashdata('message_type', 'success');
+        $this->session->setFlashdata('message_content', 'Data berhasil ditambahkan');
+        
+        return redirect()->to(base_url('owner/sales/return/manage') . '/' . $retur_id);
+    }
+    
+    public function sales_retur_print($good_retur){
+        $data_returs = $this->saleReturModel
+        ->select([
+            'return_sales.admin_id','return_sales.date',
+            'sales.number as sale_number','alasan',
+            'return_sales.number as retur_number',
+            'return_sales.admin_id','sales.contact_id'
+        ])
+        ->join('sales', 'return_sales.sale_id = sales.id','left')
+        ->where('return_sales.id', $good_retur)->get()->getFirstRow();
+
+        $item_returs = $this->saleReturnItemModel
+        ->select(['return_item.sale_item_id', 'products.name as product_name', 'return_item.quantity','warehouses.name as warehouse_name'])
+        ->join('products', 'return_item.product_id = products.id','left')
+        ->join('warehouses', 'return_item.warehouse_id = warehouses.id','left')
+        ->where('return_item.retur_id', $good_retur)
+        ->get()->getResultObject();
+
+        $administrator = $this->adminModel->where('administrators.id', $data_returs->admin_id)->first();
+        $contacts = $this->contactModel->where('contacts.id', $data_returs->contact_id)->first();
+
+        $data = ([
+            'db' => $this->db,
+            'contacts'  => $contacts,
+            'data_returs' => $data_returs,
+            'item_returs' => $item_returs,
+            'administrator' => $administrator,
+        ]);
+
+        return view('sales/retur_print', $data);
+
+    }
+
+    public function sales_return_delete_items($id, $items){
+       $goodReturItem = $this->saleReturnItemModel->find($items);
+
+       if ($goodReturItem) {
+           $this->saleReturnItemModel->where('return_item.id', $items)->delete();
+           $this->productStockModel->where('product_return_id', $items)->delete();
+
+           $this->session->setFlashdata('message_type', 'success');
+           $this->session->setFlashdata('message_content', 'Produk Berhasil Di Hapus');
+
+           return redirect()->to(base_url('owner/sales/return/manage/'. $id));
+
+       } else {
+           $this->session->setFlashdata('message_type', 'success');
+           $this->session->setFlashdata('message_content', 'Produk gagal dihapus');
+
+           return redirect()->to(base_url('owner/sales/return/manage/'. $id));
+
+       } 
+    }
+    
+    public function sales_return_delete($id){
+        $items = $this->saleReturnItemModel
+        ->where("retur_id", $id)
+        ->findAll();
+
+        foreach ($items as $item) {
+            $this->saleReturnItemModel->where("id", $item->id)->delete();
+            $this->productStockModel->where("product_return_id", $item->id)->delete();
+        }
+
+        $this->saleReturModel->delete($id);
+        $this->session->setFlashdata('message_type', 'success');
+        $this->session->setFlashdata('message_content', 'Retur berhasil dihapus');
+
+        return redirect()->to(base_url('owner/sales/return'));
+    }
+    
+    public function approve_do(){
         $stages = $this->db->table('staggingdo');
         $stages->select([
             'staggingdo.id',
@@ -101,23 +339,22 @@ class Owner extends BaseController
             'staggingdo.date as submit_date',
             'administrators.name as admin_name',
         ]);
-        $stages->join('sales', 'staggingdo.sale_id = sales.id', 'left');
+        $stages->join('sales','staggingdo.sale_id = sales.id','left');
         $stages->join('administrators', 'staggingdo.admin_id = administrators.id', 'left');
-        $stages->where('trash', 0);
+        $stages->where('staggingdo.status', 0);
         $stages->orderBy('staggingdo.id', 'asc');
         $stages = $stages->get();
-        $stages = $stages->getResultObject();
+        $stages = $stages->getResultObject();   
 
         $data = ([
             'db'   => $this->db,
             'stages'   => $stages,
         ]);
-
+        
         return view('owner/approve_do', $data);
     }
 
-    public function approve_do_manage($id)
-    {
+    public function approve_do_manage($id){
         $stages = $this->db->table('staggingdo');
         $stages->select([
             'staggingdo.id',
@@ -129,12 +366,12 @@ class Owner extends BaseController
             'administrators.name as admin_name',
             'contacts.address as contact_address',
         ]);
-        $stages->join('sales', 'staggingdo.sale_id = sales.id', 'left');
-        $stages->join('contacts', 'sales.contact_id = contacts.id', 'left');
+        $stages->join('sales','staggingdo.sale_id = sales.id','left');
+        $stages->join('contacts','sales.contact_id = contacts.id','left');
         $stages->join('administrators', 'staggingdo.admin_id = administrators.id', 'left');
-        $stages->where('staggingdo.id', $id);
+        $stages->where('staggingdo.id',$id);
         $stages = $stages->get();
-        $stages = $stages->getFirstRow();
+        $stages = $stages->getFirstRow();  
 
 
         $data = ([
@@ -145,86 +382,83 @@ class Owner extends BaseController
         return view('owner/approve_do_manage', $data);
     }
 
-    public function approve_do_check($id)
-    {
-        $this->staggingDOModel->where('id', $id)
-            ->set([
-                "status" => 1,
-            ])->update();
+    public function approve_do_check($id){
+        $this->staggingDOModel->where('id',$id)
+        ->set([
+            "status" => 1,
+        ])->update();
 
-        $approve = $this->staggingDOModel->where('id', $id)->get()->getFirstRow();
+        $approve = $this->staggingDOModel->where('id',$id)->get()->getFirstRow();
 
         if ($approve->status > 0) {
-            $this->deliveryModel->where('sale_id', $approve->sale_id)
-                ->set(['print' => 0])->update();
+            $this->deliveryModel->where('sale_id',$approve->sale_id)
+            ->set(['print' => 0])->update();
         }
-
-        $this->session->setFlashdata('message_type', 'success');
-        $this->session->setFlashdata('message_content', 'Data Pengajuan Print Ulang Berhasil Disetujui');
+        
+        $this->session->setFlashdata('message_type','success');
+        $this->session->setFlashdata('message_content','Data Pengajuan Print Ulang Berhasil Disetujui');
 
         return redirect()->back();
     }
-
-    public function perubahan_data()
-    {
+    
+    public function perubahan_data(){
         $alasan = $this->statusModel
-            ->select([
-                'administrators.name as admin_name',
-                'buys.number as buy_number',
-                'contacts.name as contact_name',
-                'products.name as product_name',
-                'status_pd.alasan as alasan_perubahan',
-                'status_pd.buy_id', 'status_pd.id',
-            ])
-            ->join('administrators', 'status_pd.admin_id = administrators.id', 'left')
-            ->join('buys', 'status_pd.buy_id = buys.id', 'left')
-            ->join('contacts', 'status_pd.contact_id = contacts.id', 'left')
-            ->join('products', 'status_pd.product_id = products.id', 'left')
-            ->where('status_pd.ready', 0)
-            ->orderBy('status_pd.id', 'desc')
-            ->get()->getResultObject();
+        ->select([
+            'administrators.name as admin_name',
+            'buys.number as buy_number',
+            'contacts.name as contact_name',
+            'products.name as product_name',
+            'status_pd.alasan as alasan_perubahan',
+            'status_pd.buy_id','status_pd.id',
+        ])
+        ->join('administrators','status_pd.admin_id = administrators.id','left')
+        ->join('buys','status_pd.buy_id = buys.id','left')
+        ->join('contacts','status_pd.contact_id = contacts.id','left')
+        ->join('products','status_pd.product_id = products.id','left')
+        ->where('status_pd.ready',0)
+        ->orderBy('status_pd.id','desc')
+        ->get()->getResultObject();
 
         $data = ([
             'alasan' => $alasan,
             'db' => $this->db,
         ]);
 
-        return view('owner/perubahan_data_pd', $data);
+        return view('owner/perubahan_data_pd',$data);
     }
 
-    public function perubahan_data_manage($id)
-    {
+    public function perubahan_data_manage($id){
         $alasan = $this->statusModel
-            ->select([
-                'administrators.name as admin_name',
-                'buys.number as buy_number',
-                'contacts.name as contact_name',
-                'products.name', 'buy_items.id as item_id',
-                'status_pd.alasan as alasan_perubahan',
-                'status_pd.buy_id', 'status_pd.id',
-            ])
-            ->join('administrators', 'status_pd.admin_id = administrators.id', 'left')
-            ->join('buy_items', 'status_pd.buy_id = buy_items.buy_id', 'left')
-            ->join('buys', 'status_pd.buy_id = buys.id', 'left')
-            ->join('contacts', 'status_pd.contact_id = contacts.id', 'left')
-            ->join('products', 'status_pd.product_id = products.id', 'left')
-            ->where('status_pd.id', $id)
-            ->where('status_pd.ready', 0)
-            ->orderBy('status_pd.id', 'desc')
-            ->get()->getFirstRow();
+        ->select([
+            'administrators.name as admin_name',
+            'buys.number as buy_number',
+            'contacts.name as contact_name',
+            'products.name','buy_items.id as item_id',
+            'status_pd.alasan as alasan_perubahan',
+            'status_pd.buy_id','status_pd.id',
+        ])
+        ->join('administrators','status_pd.admin_id = administrators.id','left')
+        ->join('buy_items','status_pd.buy_id = buy_items.buy_id','left')
+        ->join('buys','status_pd.buy_id = buys.id','left')
+        ->join('contacts','status_pd.contact_id = contacts.id','left')
+        ->join('products','status_pd.product_id = products.id','left')
+        ->where('status_pd.id',$id)
+        ->where('status_pd.ready',0)
+        ->orderBy('status_pd.id','desc')
+        ->get()->getFirstRow();
 
         $products = $this->statusModel
-            ->select([
-                'administrators.name as admin_name',
-                'products.name as product_name',
-                'status_pd.stok_awal', 'stok_sekarang',
-                'status_pd.id', 'status_pd.buy_id',
-            ])
-            ->join('administrators', 'status_pd.admin_id = administrators.id', 'left')
-            ->join('products', 'status_pd.product_id = products.id', 'left')
-            ->where('status_pd.id', $id)
-            ->where('status_pd.ready', 0)
-            ->get()->getResultObject();
+        ->select([
+            'administrators.name as admin_name',
+            'products.name as product_name',
+            'status_pd.stok_awal','stok_sekarang',
+            'status_pd.id','status_pd.buy_id',
+        ])
+        ->join('administrators','status_pd.admin_id = administrators.id','left')
+        ->join('products','status_pd.product_id = products.id','left')
+        ->where('status_pd.id',$id)
+        ->where('status_pd.ready',0)
+        ->get()->getResultObject();
 
         $data = ([
             'alasan' => $alasan,
@@ -232,155 +466,151 @@ class Owner extends BaseController
             'db' => $this->db,
         ]);
 
-        return view('owner/perubahan_data_manage', $data);
+        return view('owner/perubahan_data_manage',$data);
     }
 
-    public function approve_perubahan_data($buy_id, $buyItemID)
-    {
-        $this->statusModel->where('status_pd.id', $buy_id)
+    public function approve_perubahan_data($buy_id, $buyItemID){
+        $this->statusModel->where('status_pd.id',$buy_id)
+        ->set([
+            "ready" => 1,
+        ])->update();
+
+        $approved = $this->statusModel->where('status_pd.id',$buy_id)->orderBy('id','desc')->first();
+
+        if($approved->ready > 0) {
+            $this->buyItemsModel
+            ->where('buy_items.id',$approved->buy_item_id)
             ->set([
-                "ready" => 1,
+                'quantity' => $approved->stok_sekarang,
+                'need_approve' => 3,
+                'approve_status' => 1,
+                'admin_approve_id' => $this->session->login_id,
             ])->update();
 
-        $approved = $this->statusModel->where('status_pd.id', $buy_id)->orderBy('id', 'desc')->first();
-
-        if ($approved->ready > 0) {
-            $this->buyItemsModel
-                ->where('buy_items.id', $approved->buy_item_id)
-                ->set([
-                    'quantity' => $approved->stok_sekarang,
-                    'need_approve' => 3,
-                    'approve_status' => 1,
-                    'admin_approve_id' => $this->session->login_id,
-                ])->update();
-
             $this->productStockModel
-                ->where('product_stocks.buy_item_id', $approved->buy_item_id)
-                ->set(['quantity' => $approved->stok_sekarang])->update();
+            ->where('product_stocks.buy_item_id',$approved->buy_item_id)
+            ->set(['quantity' => $approved->stok_sekarang])->update();
         }
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', 'Data Berhasil Disetujui');
 
         return redirect()->to(base_url('owner/perubahan_data'));
+
     }
 
-    public function perubahan_status()
-    {
+    public function perubahan_status(){
         $alasan = $this->alasanModel
-            ->select([
-                'status_so.id',
-                'sales.number as sale_number',
-                'status_so.sale_id',
-                'administrators.name as admin_name',
-                'contacts.name as contact_name',
-                'status_so.status_awal',
-                'status_so.need_approve',
-                'status_so.alasan_status as alasan',
-                'status_so.approve_status',
-                'status_so.admin_approve_id',
-            ])
-            ->join('contacts', 'status_so.contact_id = contacts.id', 'left')
-            ->join('administrators', 'status_so.admin_id = administrators.id', 'left')
-            ->join('sales', 'status_so.sale_id = sales.id', 'left')
-            ->where('status_so.approve_status', 0)
-            ->orderBy('status_so.id', 'desc')
-            ->findAll();
+        ->select([
+            'status_so.id',
+            'sales.number as sale_number',
+            'status_so.sale_id',
+            'administrators.name as admin_name',
+            'contacts.name as contact_name',
+            'status_so.status_awal',
+            'status_so.need_approve',
+            'status_so.alasan_status as alasan',
+            'status_so.approve_status',
+            'status_so.admin_approve_id', 
+        ])
+        ->join('contacts','status_so.contact_id = contacts.id','left')
+        ->join('administrators','status_so.admin_id = administrators.id','left')
+        ->join('sales','status_so.sale_id = sales.id','left')
+        ->where('status_so.approve_status', 0)
+        ->orderBy('status_so.id','desc')
+        ->findAll();
 
         $data = ([
             'db' => $this->db,
             'alasan' => $alasan,
         ]);
-
-        return view('owner/perubahan_status', $data);
+        
+        return view('owner/perubahan_status',$data);
     }
-
-    public function perubahan_status_manage($id)
-    {
+    
+    public function perubahan_status_manage($id){
         $alasan = $this->alasanModel
-            ->select([
-                'status_so.id',
-                'status_so.product_id',
-                'status_so.qty_edit', 'harga_edit',
-                'sales.number as sale_number',
-                'status_so.sale_id',
-                'administrators.name as admin_name',
-                'contacts.name as contact_name',
-                'status_so.status_awal',
-                'status_so.need_approve',
-                'status_so.alasan_status as alasan',
-                'status_so.approve_status',
-                'status_so.admin_approve_id',
-            ])
-            ->join('contacts', 'status_so.contact_id = contacts.id', 'left')
-            ->join('administrators', 'status_so.admin_id = administrators.id', 'left')
-            ->join('sales', 'status_so.sale_id = sales.id', 'left')
-            ->where('status_so.id', $id)
-            ->orderBy('status_so.id', 'desc')
-            ->get()->getResultObject();
+        ->select([
+            'status_so.id',
+            'status_so.product_id',
+            'status_so.qty_edit','harga_edit',
+            'sales.number as sale_number',
+            'status_so.sale_id',
+            'administrators.name as admin_name',
+            'contacts.name as contact_name',
+            'status_so.status_awal',
+            'status_so.need_approve',
+            'status_so.alasan_status as alasan',
+            'status_so.approve_status',
+            'status_so.admin_approve_id', 
+        ])
+        ->join('contacts','status_so.contact_id = contacts.id','left')
+        ->join('administrators','status_so.admin_id = administrators.id','left')
+        ->join('sales','status_so.sale_id = sales.id','left')
+        ->where('status_so.id',$id)
+        ->orderBy('status_so.id','desc')
+        ->get()->getResultObject();
 
         $datas = $this->alasanModel
-            ->select([
-                'sales.number as sale_number',
-                'contacts.name as contact_name',
-                'contacts.address as addresses',
-                'status_so.alasan_status as alasan',
-                'administrators.name as admin_name',
-            ])
-            ->join('sales', 'status_so.sale_id = sales.id', 'left')
-            ->join('contacts', 'status_so.contact_id = contacts.id', 'left')
-            ->join('administrators', 'status_so.admin_id = administrators.id', 'left')
-            ->where('status_so.id', $id)
-            ->get()->getFirstRow();
+        ->select([
+            'sales.number as sale_number',
+            'contacts.name as contact_name',
+            'contacts.address as addresses',
+            'status_so.alasan_status as alasan',
+            'administrators.name as admin_name',
+        ])
+        ->join('sales','status_so.sale_id = sales.id','left')
+        ->join('contacts','status_so.contact_id = contacts.id','left')
+        ->join('administrators','status_so.admin_id = administrators.id','left')
+        ->where('status_so.id',$id)
+        ->get()->getFirstRow();
 
         $data = ([
             'db' => $this->db,
             'datas' => $datas,
             'alasan' => $alasan,
         ]);
-        return view('owner/perubahan_status_manage', $data);
+        return view('owner/perubahan_status_manage',$data);
     }
+    
+    public function approve_perubahan($id){
 
-    public function approve_perubahan($id)
-    {
+        $this->alasanModel->where('status_so.sale_id',$id)
+        ->set([
+            "approve_status" => 1,
+        ])->update();
 
-        $this->alasanModel->where('status_so.sale_id', $id)
-            ->set([
-                "approve_status" => 1,
-            ])->update();
-
-        $approve = $this->alasanModel->where('sale_id', $id)->get()->getFirstRow();
+        $approve = $this->alasanModel->where('sale_id',$id)->get()->getFirstRow();
 
         if ($approve->approve_status > 0) {
-            $this->saleModel->where('sales.id', $approve->sale_id)
-                ->set(['status' => 2])->update();
+            $this->saleModel->where('sales.id',$approve->sale_id)
+            ->set(['status' => 2])->update();
         }
+        
+        $this->session->setFlashdata('message_type','success');
+        $this->session->setFlashdata('message_content','Data perubahan so berhasil di setujui');
 
-        $this->session->setFlashdata('message_type', 'success');
-        $this->session->setFlashdata('message_content', 'Data perubahan so berhasil di setujui');
-
-        return redirect()->to(base_url('owner/perubahan_status'));
+        return redirect()->to(base_url('owner/perubahan_status')); 
     }
+    
+    public function unapprove_perubahan($id){
+        $this->alasanModel->where("status_so.sale_id",$id)
+        ->set([
+            "approve_status"=>2,
+        ])->update();
 
-    public function unapprove_perubahan($id)
-    {
-        $this->alasanModel->where("status_so.sale_id", $id)
-            ->set([
-                "approve_status" => 2,
-            ])->update();
+        $unapprove = $this->alasanModel->where('sale_id',$id)->get()->getFirstRow();
 
-        $unapprove = $this->alasanModel->where('sale_id', $id)->get()->getFirstRow();
-
-        if ($unapprove->approve_status > 0) {
+        if ($unapprove->approve_status >0) {
             $this->saleModel->where('sales.id', $unapprove->sale_id)
-                ->set(['status' => 3])->update();
+            ->set(['status' => 3])->update();
 
-            $this->saleItemModel->where("sale_id", $id)
-                ->set([
-                    "approve_status" => 2,
-                    "need_approve" => 3,
-                    "admin_approve_id" => 12,
-                ])->update();
+            $this->saleItemModel->where("sale_id",$id)
+            ->set([
+                "approve_status"=>2,
+                "need_approve"=>3,
+                "admin_approve_id"=> 12,
+            ])->update();
         }
 
         $this->session->setFlashdata('message_type', 'success');
@@ -388,61 +618,60 @@ class Owner extends BaseController
 
         return redirect()->to(base_url('owner/perubahan_status'));
     }
-
-    public function delivery_orders()
+  
+  	public function delivery_orders()
     {
-        $items = $this->saleItemModel
-            ->findAll();
+      $items = $this->saleItemModel
+        ->findAll();
 
-        $data = ([
-            "items" => $items,
-            "db" => $this->db,
+         $data = ([
+           "items" => $items,
+            "db"=> $this->db,
         ]);
 
         return view('owner/delivery_orders', $data);
     }
+      
 
-
-    public function products_locations()
-    {
-        $products = $this->productModel->where("trash", 0)->orderBy("name", "asc")->findAll();
+    public function products_locations(){
+        $products = $this->productModel->where("trash",0)->orderBy("name","asc")->findAll();
         $warehouses = $this->warehouseModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
-
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
+        
         $categories = $this->productCategoriesModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
 
         $codes = $this->codeModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
         $prices = $this->productPriceModel
-            ->orderBy("code", "asc")
-            ->findAll();
-
+        ->orderBy("code", "asc")
+        ->findAll();
+       
         $data = ([
             "products"  => $products,
             "warehouses"          => $warehouses,
             "categories"          => $categories,
             "codes"          => $codes,
             "prices"          => $prices,
-            "db" => $this->db,
+            "db"=> $this->db,
         ]);
 
-        return view("owner/product_locations", $data);
+        return view("owner/product_locations",$data);
     }
 
     public function products()
     {
         $products = $this->productModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->get()
-            ->getResultObject();
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->get()
+        ->getResultObject();        
 
         $data = ([
             "db"                => $this->db,
@@ -451,25 +680,24 @@ class Owner extends BaseController
 
         return view('owner/products', $data);
     }
-    public function products_manage($id)
-    {
-        $product = $this->productModel->where("id", $id)->where("trash", 0)->first();
+    public function products_manage($id){
+        $product = $this->productModel->where("id",$id)->where("trash",0)->first();
 
-
-        $category = $this->productCategoriesModel->where("id", $product->category_id)->first();
-        $code = $this->codeModel->where("id", $product->code_id)->first();
+        
+        $category = $this->productCategoriesModel->where("id",$product->category_id)->first();
+        $code = $this->codeModel->where("id",$product->code_id)->first();
 
         // d($category);
 
         $categories = $this->productCategoriesModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
 
         $codes = $this->codeModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
 
         $data = ([
             "product"   => $product,
@@ -480,99 +708,95 @@ class Owner extends BaseController
             "db"        => $this->db,
         ]);
 
-        return view("owner/product_manage", $data);
+        return view("owner/product_manage",$data);
     }
-
-    public function product_price_set($price, $product, $status)
-    {
+    
+    public function product_price_set($price, $product, $status){
         $this->productPriceModel
-            ->where("id", $price)
-            ->set([
-                "approve_owner_status" => $status,
-                "owner_id" => $this->session->login_id,
-                "date_owner_approve"   => date("Y-m-d")
-            ])->update();
+        ->where("id",$price)
+        ->set([
+            "approve_owner_status" => $status,
+            "owner_id" => $this->session->login_id,
+            "date_owner_approve"   => date("Y-m-d")
+        ])->update();
 
-        if ($status == 2) {
+        if($status == 2){
             $this->session->setFlashdata('message_type', 'success');
             $this->session->setFlashdata('message_content', 'Harga berhasil disetujui');
-
-            return redirect()->to(base_url('owner/products/' . $product . '/manage'));
-        } else {
-            $this->session->setFlashdata('message_type', 'success');
-            $this->session->setFlashdata('message_content', 'Harga berhasil tidak disetujui');
-            return redirect()->to(base_url('owner/products/' . $product . '/manage'));
-        }
-    }
-
-    public function price_approval()
-    {
-        $prices = $this->db->table("product_prices");
-        $prices->select("product_prices.level as 'price_level'");
-        $prices->select("product_prices.percentage as 'price_percentage'");
-        $prices->select("products.id as 'product_id'");
-        $prices->select("products.name as 'product_name");
+  
+            return redirect()->to(base_url('owner/products/'.$product.'/manage'));
+        }else{ 
+            $this->session->setFlashdata('message_type', 'success'); 
+            $this->session->setFlashdata('message_content', 'Harga berhasil tidak disetujui'); 
+            return redirect()->to(base_url('owner/products/'.$product.'/manage')); 
+        } 
+    } 
+ 
+    public function price_approval(){ 
+        $prices = $this->db->table("product_prices"); 
+        $prices->select("product_prices.level as 'price_level'"); 
+        $prices->select("product_prices.percentage as 'price_percentage'"); 
+        $prices->select("products.id as 'product_id'");  
+        $prices->select("products.name as 'product_name"); 
         $prices->select("products.price as 'product_price");
-        $prices->select("products.sku_number as 'product_sku_number'");
+        $prices->select("products.sku_number as 'product_sku_number'"); 
         $prices->select("categories.name as 'code_name'");
-        $prices->join("products", "products_prices.product_id=products.id", "left");
-        $prices->join("categories','products.categorY_id=categories.id", "left");
-        $prices->join("codes", "products.code_id=codes.id", "left");
-        $prices->orderBy("product_prices.level", "desc");
-        $prices->orderBy("product_prices.date_created", "desc");
-        $prices->orderBy("product_prices.id", "desc");
-        $prices = $prices->get();
-        $prices = $prices->getResultObject();
-        $data = ([
-            "prices"          => $prices,
-        ]);
-        return view("owner/price_approval", $data);
+        $prices->join("products","products_prices.product_id=products.id","left");
+        $prices->join("categories','products.categorY_id=categories.id","left");
+        $prices->join("codes","products.code_id=codes.id","left"); 
+        $prices->orderBy("product_prices.level","desc"); 
+        $prices->orderBy("product_prices.date_created","desc"); 
+        $prices->orderBy("product_prices.id","desc"); 
+        $prices = $prices->get(); 
+        $prices = $prices->getResultObject();  
+        $data = ([ 
+            "prices"          => $prices, 
+        ]); 
+        return view("owner/price_approval",$data); 
     }
-
+    
     public function getSalesOrder()
     {
         $allow_warehouses = !empty(cek_session($this->session->get('login_id'))['allow_warehouses']) ? cek_session($this->session->get('login_id'))['allow_warehouses'] : '"1","2","3","4","5","6","7","8","9","10"';
-
+        
         $builder = $this->db->table('sales')
-            ->select('sales.id, number, transaction_date, administrators.name as admin_name, contacts.name as contact_name, contacts.phone as contact_phone')
-            ->join('administrators', 'sales.admin_id = administrators.id')
-            ->join('contacts', 'sales.contact_id = contacts.id')
-            ->where("sales.id in(
+        ->select('sales.id, number, transaction_date, administrators.name as admin_name, contacts.name as contact_name, contacts.phone as contact_phone')
+        ->join('administrators', 'sales.admin_id = administrators.id')
+        ->join('contacts', 'sales.contact_id = contacts.id')
+        ->where("sales.id in(
             select sale_id from sale_items as AA
             inner join product_stocks as BB on AA.id=BB.sale_item_id 
             where BB.warehouse_id in($allow_warehouses)
         )")
-            ->where('sales.trash', 0)
-            ->orderBy('sales.id', 'desc');
-
+        ->orderBy('sales.id', 'desc');
+        
         return DataTable::of($builder)
-            ->setSearchableColumns(["sales.number", "sales.transaction_date", "contacts.name", "administrators.name"])
-            ->toJson(true);
+        ->setSearchableColumns(["sales.number", "sales.transaction_date", "contacts.name", "administrators.name"])
+        ->toJson(true);
     }
-
-    public function sales()
-    {
+    
+    public function sales(){
         $allow_warehouses = !empty(cek_session($this->session->get('login_id'))['allow_warehouses']) ? cek_session($this->session->get('login_id'))['allow_warehouses'] : '"1","2","3","4","5","6","7","8","9","10"';
-
+        
         $sales = $this->db->table('sale_items as a');
         $sales->select([
-            'b.id',
+            'b.id','b.trash',
             'b.transaction_date',
             'e.name as admin_name',
-            'c.name as contact_name',
+            'c.name as contact_name',   
             'b.number as sale_number',
             'f.name as tag_name',
         ]);
-        $sales->join('sales as b', 'a.sale_id = b.id', 'left');
-        $sales->join('contacts as c', 'b.contact_id = c.id', 'left');
-        $sales->join('product_stocks as d', 'a.id = d.sale_item_id', 'left');
-        $sales->join('administrators as e', 'b.admin_id = e.id', 'left');
-        $sales->join('tags as f', 'b.tags = f.id', 'left');
+        $sales->join('sales as b', 'a.sale_id = b.id','left');
+        $sales->join('contacts as c', 'b.contact_id = c.id','left');
+        $sales->join('product_stocks as d', 'a.id = d.sale_item_id','left');
+        $sales->join('administrators as e', 'b.admin_id = e.id','left');
+        $sales->join('tags as f', 'b.tags = f.id','left');
         $sales->where('b.contact_id !=', NULL);
         $sales->where('b.payment_id !=', NULL);
         $sales->where('b.trash', 0);
         $sales->whereNotIn('d.warehouse_id', [$allow_warehouses]);
-        $sales->orderBy('b.transaction_date', 'desc');
+        $sales->orderBy('b.transaction_date','desc');
         $sales->groupBy('b.id');
         $sales = $sales->get();
         $sales = $sales->getResultObject();
@@ -584,81 +808,80 @@ class Owner extends BaseController
 
         return view('owner/sales', $data);
     }
-
-    public function sales_manage($id)
-    {
-        $sale = $this->saleModel->where("id", $id)->first();
-        $delivery = $this->deliveryModel->where('deliveries.id', $id)->get()->getFirstRow();
-        $branch = $this->branchModel->where('trash', 0)->findAll();
+    
+    public function sales_test($id) {
+        $sale = $this->saleModel->where("id",$id)->first();
+        $delivery = $this->deliveryModel->where('deliveries.id',$id)->get()->getFirstRow();
         
-
-        if ($sale == NULL) {
-            $this->session->setFlashdata('message_type', 'error');
-            $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
-            return redirect()->to(base_url('dashboard'));
-        }
+        if($sale == NULL){ 
+            $this->session->setFlashdata('message_type', 'error'); 
+            $this->session->setFlashdata('message_content', 'Data tidak ditemukan'); 
+            return redirect()->to(base_url('dashboard')); 
+        } 
 
         $locations = $this->locationModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll(); 
 
         $contacts = $this->contactModel
-            ->where('contacts.name !=', "")
-            ->where("type", 2)
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
-
+        ->where('contacts.name !=', "")
+        ->where("type",2)
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll();
+        
         $contact = $this->contactModel
-            ->where("id", $sale->contact_id)->first();
+        ->where("id",$sale->contact_id)->first();
 
         $admin = $this->adminModel
-            ->where("id", $sale->admin_id)->first();
+        ->where("id",$sale->admin_id)->first();
 
         $warehouse = $this->warehouseModel
-            ->where("id", $sale->warehouse_id)
-            ->first();
+        ->where("id",$sale->warehouse_id)
+        ->first();
 
         $payments = $this->paymentModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll();
 
         $tags = $this->tagModel
-            ->where('tags.active', 0)
-            ->orderBy("name", "asc")
-            ->findAll();
-
+        ->where('tags.active', 0)
+        ->orderBy("name","asc")
+        ->findAll();
+        
         $products = $this->productModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
-
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
+        
         $items = $this->saleItemModel
-            ->select("sale_items.*,B.quantity as QtyKeluar")
-            ->join("delivery_items as B", "sale_items.id=B.sale_item_id", "left")
-            ->where("sale_id", $id)
-            ->findAll();
+        ->select("sale_items.*,B.quantity as QtyKeluar")
+        ->join("delivery_items as B","sale_items.id=B.sale_item_id","left")
+        ->where("sale_id",$id)
+        ->findAll();
 
         $promos = $this->promoModel
-            ->where("date_start <=", date("Y-m-d"))
-            ->where("date_end >=", date("Y-m-d"))
-            ->findAll();
+        ->where("date_start <=",date("Y-m-d"))
+        ->where("date_end >=",date("Y-m-d"))
+        ->findAll();
 
         $contact = $this->contactModel
-            ->where('contacts.name !=', "")
-            ->where("id", $sale->contact_id)
-            ->first();
+        ->where('contacts.name !=', "")
+        ->where("id",$sale->contact_id)
+        ->first();
 
         $warehouses = $this->warehouseModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll();
 
         $payment = $this->paymentModel
-            ->where("id", $sale->payment_id)
-            ->first();
+        ->where("id",$sale->payment_id)
+        ->first();
+        
+        $branch = $this->branchModel->findAll();
 
         $data = ([
             "db"    => $this->db,
@@ -666,10 +889,10 @@ class Owner extends BaseController
             "contact"  => $contact,
             "locations" => $locations,
             "admin"  => $admin,
-            "warehouse" => $warehouse,
-            "payments" => $payments,
-            "tags" => $tags,
-            "products" => $products,
+            "warehouse"=> $warehouse,
+            "payments"=> $payments,
+            "tags"=> $tags,
+            "products"=> $products,
             "sale"  => $sale,
             "items" => $items,
             "promos" => $promos,
@@ -680,153 +903,270 @@ class Owner extends BaseController
             "branch" => $branch
         ]);
 
-        if ($sale->status >= 4) {
-            return view("owner/sales_manage_fix", $data);
-        } else {
-            if ($sale->admin_id == $this->session->login_id) {
-                return view("owner/sales_own_manage", $data);
-            } else {
-                if ($sale->contact_id == NULL) {
+        if($sale->status >= 4){
+            return view("owner/sales_manage_fix",$data);
+        }else{
+            if($sale->admin_id == $this->session->login_id){
+                return view("owner/testSalesManage",$data);            
+            }else{
+                if($sale->contact_id == NULL){
                     $this->session->setFlashdata('message_type', 'error');
                     $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
-
+                    
                     return redirect()->to(base_url('dashboard'));
                 }
-                if ($sale->payment_id == NULL) {
+                if($sale->payment_id == NULL){
                     $this->session->setFlashdata('message_type', 'error');
                     $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
-
+                    
                     return redirect()->to(base_url('dashboard'));
                 }
-                return view("owner/sales_manage", $data);
+                return view("owner/sales_manage",$data);
             }
+        }
+        
+        if($sale->trash > 0){
+            $this->session->setFlashdata('message_type', 'error');
+            $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
+        }
+    }
+    
+    public function sales_manage($id){
+        $sale = $this->saleModel->where("id",$id)->first();
+        $delivery = $this->deliveryModel->where('deliveries.id',$id)->get()->getFirstRow();
+        
+        if($sale == NULL){ 
+            $this->session->setFlashdata('message_type', 'error'); 
+            $this->session->setFlashdata('message_content', 'Data tidak ditemukan'); 
+            return redirect()->to(base_url('dashboard')); 
+        } 
+
+        $locations = $this->locationModel
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll();
+
+        $contacts = $this->contactModel
+        ->where('contacts.name !=', "")
+        ->where("type",2)
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll();
+        
+        $contact = $this->contactModel
+        ->where("id",$sale->contact_id)->first();
+
+        $admin = $this->adminModel
+        ->where("id",$sale->admin_id)->first();
+
+        $warehouse = $this->warehouseModel
+        ->where("id",$sale->warehouse_id)
+        ->first();
+
+        $payments = $this->paymentModel
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll();
+
+        $tags = $this->tagModel
+        ->where('tags.active', 0)
+        ->orderBy("name","asc")
+        ->findAll();
+        
+        $products = $this->productModel
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
+        
+        $items = $this->saleItemModel
+        ->select("sale_items.*,B.quantity as QtyKeluar")
+        ->join("delivery_items as B","sale_items.id=B.sale_item_id","left")
+        ->where("sale_id",$id)
+        ->findAll();
+
+        $promos = $this->promoModel
+        ->where("date_start <=",date("Y-m-d"))
+        ->where("date_end >=",date("Y-m-d"))
+        ->findAll();
+
+        $contact = $this->contactModel
+        ->where('contacts.name !=', "")
+        ->where("id",$sale->contact_id)
+        ->first();
+
+        $warehouses = $this->warehouseModel
+        ->where("trash",0)
+        ->orderBy("name","asc")
+        ->findAll();
+
+        $payment = $this->paymentModel
+        ->where("id",$sale->payment_id)
+        ->first();
+
+        $data = ([
+            "db"    => $this->db,
+            "contacts"  => $contacts,
+            "contact"  => $contact,
+            "locations" => $locations,
+            "admin"  => $admin,
+            "warehouse"=> $warehouse,
+            "payments"=> $payments,
+            "tags"=> $tags,
+            "products"=> $products,
+            "sale"  => $sale,
+            "items" => $items,
+            "promos" => $promos,
+            "thisContact"   => $contact,
+            "payment" => $payment,
+            "warehouses"          => $warehouses,
+            "delivery" => $delivery,
+        ]);
+
+        if($sale->status >= 4){
+            return view("owner/sales_manage_fix",$data);
+        }else{
+            if($sale->admin_id == $this->session->login_id){
+                return view("owner/sales_own_manage",$data);            
+            }else{
+                if($sale->contact_id == NULL){
+                    $this->session->setFlashdata('message_type', 'error');
+                    $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
+                    
+                    return redirect()->to(base_url('dashboard'));
+                }
+                if($sale->payment_id == NULL){
+                    $this->session->setFlashdata('message_type', 'error');
+                    $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
+                    
+                    return redirect()->to(base_url('dashboard'));
+                }
+                return view("owner/sales_manage",$data);
+            }
+        }
+        
+        if($sale->trash > 0){
+            $this->session->setFlashdata('message_type', 'error');
+            $this->session->setFlashdata('message_content', 'Data tidak ditemukan');
         }
     }
 
-    public function target()
-    {
+    public function target(){
         $admins = $this->adminModel
-            ->where("role >=", 2)
-            ->where("role <=", 5)
-            ->orderBy("name", "asc")
-            ->findAll();
+        ->where("role >=",2)
+        ->where("role <=",5)
+        ->orderBy("name","asc")
+        ->findAll();
 
         $data = ([
             "admins" => $admins
         ]);
 
-        return view("owner/target", $data);
+        return view("owner/target",$data);
     }
 
-    public function target_save()
-    {
+    public function target_save(){
         $id = $this->request->getPost('id');
         $target = $this->request->getPost('target');
 
-        $this->adminModel->where("id", $id)->set([
-            "sale_target" => $target
+        $this->adminModel->where("id",$id)->set([
+            "sale_target"=>$target
         ])->update();
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', 'Target penjualan berhasil disimpan');
-
+        
         return redirect()->to(base_url('owner/target'));
-    }
+    } 
 
-    public function addresses()
-    {
-        $addresses = $this->addressModel->orderBy("name", "asc")->findAll();
+    public function addresses(){
+        $addresses = $this->addressModel->orderBy("name","asc")->findAll(); 
         $data = ([
             "addresses" => $addresses
-        ]);
-        return view("owner/addresses", $data);
+        ]); 
+        return view("owner/addresses",$data);
     }
 
-    public function addresses_add()
-    {
+    public function addresses_add(){
         $name = $this->request->getPost('name');
-        $ip = $this->request->getPost('ip');
-        $address = $this->addressModel->where("address", $ip)->first();
+        $ip = $this->request->getPost('ip'); 
+        $address = $this->addressModel->where("address",$ip)->first();
 
-        if ($address) {
+        if($address){
             $this->session->setFlashdata('message_type', 'warning');
-            $this->session->setFlashdata('message_content', 'Alamat IP ' . $ip . ' Sudah Ada');
-
+            $this->session->setFlashdata('message_content', 'Alamat IP '.$ip.' Sudah Ada');
+            
             return redirect()->to(base_url('owner/addresses'));
-        } else {
+        }else{
             $this->addressModel->insert([
                 "name"              => $name,
                 "address"           => $ip,
                 "date_insert"       => date("Y-m-d")
             ]);
-
+            
             $this->session->setFlashdata('message_type', 'success');
-            $this->session->setFlashdata('message_content', 'Alamat IP Berhasil Ditambah');
+            $this->session->setFlashdata('message_content', 'Alamat IP Berhasil Ditambah'); 
             return redirect()->to(base_url('owner/addresses'));
         }
     }
 
-    public function addresses_save()
-    {
+    public function addresses_save(){
         $id = $this->request->getPost('id');
         $name = $this->request->getPost('name');
         $ip = $this->request->getPost('ip');
 
-        $address = $this->addressModel->where("address", $ip)->first();
+        $address = $this->addressModel->where("address",$ip)->first();
 
-        if ($address) {
-            $this->addressModel->where("id", $id)->set([
+        if($address){
+            $this->addressModel->where("id",$id)->set([
                 "name"              => $name,
-            ])->update();
+            ])->update(); 
             $this->session->setFlashdata('message_type', 'success');
-            $this->session->setFlashdata('message_content', 'Alamat IP ' . $ip . ' Berhasil Disimpan');
+            $this->session->setFlashdata('message_content', 'Alamat IP '.$ip.' Berhasil Disimpan'); 
             return redirect()->to(base_url('owner/addresses'));
-        } else {
-            $this->addressModel->where("id", $id)->set([
+        }else{
+            $this->addressModel->where("id",$id)->set([
                 "name"              => $name,
                 "address"           => $ip,
             ])->update();
-
+            
             $this->session->setFlashdata('message_type', 'success');
-            $this->session->setFlashdata('message_content', 'Alamat IP Berhasil Disimpan');
-            return redirect()->to(base_url('owner/addresses'));
+            $this->session->setFlashdata('message_content', 'Alamat IP Berhasil Disimpan'); 
+            return redirect()->to(base_url('owner/addresses')); 
         }
     }
 
-    public function addresses_delete($id)
-    {
+    public function addresses_delete($id){
         $this->addressModel->delete($id);
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', 'Alamat IP Berhasil Dihapus');
-
+        
         return redirect()->to(base_url('owner/addresses'));
     }
 
-    public function sales_need_approval()
-    {
+    public function sales_need_approval(){        
         $items = $this->saleItemModel
-            ->select("sales.id as sale_id")
-            // ->select("sales.contact_id")
-            ->select("sales.number as sale_number")
-            ->select("sales.transaction_date as sale_date")
-            ->select("products.name as product_name")
-            ->select("sale_items.id as sale_item_id")
-            ->select("sale_items.price_level as item_price_level")
-            ->select("sale_items.price as item_price")
-            ->select("administrators.name as admin_name")
-            ->select("contacts.name as contact_name")
-            ->join("products", "sale_items.product_id=products.id", "left")
-            ->join("sales", "sale_items.sale_id=sales.id", "left")
-            ->join("administrators", "sales.admin_id=administrators.id", "left")
-            ->join("contacts", "sales.contact_id=contacts.id", "left")
-            ->where("sale_items.need_approve >", 0)
-            ->where("sale_items.admin_approve_id", 0)
-            ->where("sales.status", 1)
-            ->where("sales.contact_id !=", NULL)
-            ->where("sales.payment_id !=", NULL)
-            ->orderBy("sales.transaction_date", "desc")
-            ->orderBy("sales.id", "desc")
-            ->findAll();
+        ->select("sales.id as sale_id")
+        // ->select("sales.contact_id")
+        ->select("sales.number as sale_number")
+        ->select("sales.transaction_date as sale_date")
+        ->select("products.name as product_name")
+        ->select("sale_items.id as sale_item_id")
+        ->select("sale_items.price_level as item_price_level")
+        ->select("sale_items.price as item_price")
+        ->select("administrators.name as admin_name")
+        ->select("contacts.name as contact_name")
+        ->join("products","sale_items.product_id=products.id","left")
+        ->join("sales","sale_items.sale_id=sales.id","left")
+        ->join("administrators","sales.admin_id=administrators.id","left")
+        ->join("contacts","sales.contact_id=contacts.id","left")
+        ->where("sale_items.need_approve >",0)
+        ->where("sale_items.admin_approve_id",0)
+        ->where("sales.status",1)
+        ->where("sales.contact_id !=",NULL)
+        ->where("sales.payment_id !=",NULL)
+        ->orderBy("sales.transaction_date","desc")
+        ->orderBy("sales.id","desc")
+        ->findAll();
 
         $data = ([
             "db" => $this->db,
@@ -834,67 +1174,65 @@ class Owner extends BaseController
             // "contact_id" => $contact,
         ]);
 
-        return view("owner/sales_need_approval", $data);
+        return view("owner/sales_need_approval",$data);
     }
 
-    public function sales_item_approve($sale, $item)
-    {
-        $this->saleItemModel->where("id", $item)
-            ->set([
-                "approve_status" => 1,
-                "need_approve" => 3,
-                "admin_approve_id" => $this->session->login_id,
-                "ready" => 1
-            ])->update();
+    public function sales_item_approve($sale,$item){
+        $this->saleItemModel->where("id",$item)
+        ->set([
+            "approve_status"=>1,
+            "need_approve"=>3,
+            "admin_approve_id"=>$this->session->login_id,
+            "ready"=>1
+        ])->update();
 
-        $items = $this->saleItemModel->where("sale_id", $sale)->findAll();
+        $items = $this->saleItemModel->where("sale_id",$sale)->findAll();
 
         $saleReady = 1;
-        foreach ($items as $item) {
+        foreach($items as $item){
             $saleReady = $saleReady * $item->ready;
         }
 
-        if ($saleReady == 1) {
-            $this->saleModel->where("id", $sale)
-                ->set(["status" => 2])->update();
-        } else {
-            $this->saleModel->where("id", $sale)
-                ->set(["status" => 1])->update();
-        }
+        if($saleReady == 1){
+            $this->saleModel->where("id",$sale)
+            ->set(["status"=>2])->update();
+        }else{
+            $this->saleModel->where("id",$sale)
+            ->set(["status"=>1])->update();
+        } 
 
         $this->session->setFlashdata('message_type', 'success');
-        $this->session->setFlashdata('message_content', 'Item berhasil disetujui');
-        return redirect()->to(base_url('owner/sales/' . $sale . '/manage'));
+        $this->session->setFlashdata('message_content', 'Item berhasil disetujui'); 
+        return redirect()->to(base_url('owner/sales/'.$sale.'/manage'));
     }
 
-    public function sales_item_unapprove($sale, $item)
-    {
-        $this->saleItemModel->where("id", $item)
-            ->set([
-                "approve_status" => 2,
-                "need_approve" => 3,
-                "admin_approve_id" => $this->session->login_id,
-                "ready" => 0
-            ])->update();
+    public function sales_item_unapprove($sale,$item){
+        $this->saleItemModel->where("id",$item)
+        ->set([
+            "approve_status"=>2,
+            "need_approve"=>3,
+            "admin_approve_id"=>$this->session->login_id,
+            "ready"=>0
+        ])->update();
 
-        $this->saleModel->where("id", $sale)
-            ->set(["status" => 3])->update();
+        $this->saleModel->where("id",$sale)
+        ->set(["status"=>3])->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', 'Item berhasil tidak disetujui');
 
-        return redirect()->to(base_url('owner/sales/' . $sale . '/manage'));
+        return redirect()->to(base_url('owner/sales/'.$sale.'/manage'));
     }
-
-    public function insentif_karyawan()
+    
+        public function insentif_karyawan()
     {
 
 
         $role = config("App")->roles;
-
+    
         $data = ([
             "db" => $this->db,
-            "insentif" => $this->insentifModel->whereIn("role", [2, 3, 4, 5])->findAll(),
+            "insentif" => $this->insentifModel->whereIn("role", [2,3,4,5])->findAll(),
             "sale" => $this->saleItemModel->findAll(),
             "rumus" => $this->productPriceModel->findAll(),
             "role" => $role,
@@ -931,12 +1269,12 @@ class Owner extends BaseController
                 "price_id" => "11",
                 "code" => $incentive,
             ];
-        } else {
+        }else{
             $rumus = explode("|", $harga);
             $thisPriceId = $rumus[0];
             $thisPriceCode = $rumus[1];
 
-            $data = [
+             $data = [
                 "keterangan" => $this->request->getPost("keterangan"),
                 "price_id" => $thisPriceId,
                 "code" => $thisPriceCode,
@@ -982,17 +1320,17 @@ class Owner extends BaseController
 
         $coba = $get->id;
 
-        return redirect()->to(base_url("owner/insentif/" . $coba . "/manage"));
+        return redirect()->to(base_url("owner/insentif/".$coba."/manage"));
     }
 
     public function insentif_manage($id)
     {
-
+        
         $data = ([
             "insentif" => $this->insentifModel->where("id", $id)->first(),
             "db"    => $this->db,
         ]);
-
+        
         return view("owner/insentif_manage", $data);
     }
 
@@ -1075,13 +1413,13 @@ class Owner extends BaseController
                 "level_9",
                 "level_10"
             ]);
-        } else {
-            $data = $this->request->getPost([
-                "custom_price"
-            ]);
-        }
-
-
+        }else{
+           $data = $this->request->getPost([
+            "custom_price"
+        ]);
+       }
+        
+        
 
         $this->insentifModel->update($id, $data);
 

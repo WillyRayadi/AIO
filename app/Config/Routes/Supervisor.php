@@ -1,4 +1,7 @@
 <?php
+
+$routes->get("custom/insentif/supervisor", "Supervisor::custom_insentif");
+$routes->get("custom/insentif/manage/(:num)/supervisor", "Supervisor::custom_insentif_manage/$1");
 $routes->get("supervisor/sales", "Supervisor::sales");
 $routes->get("supervisor/my/sales", "Supervisor::mySales");
 $routes->get("supervisor/sales/add", "Supervisor::sales_add");

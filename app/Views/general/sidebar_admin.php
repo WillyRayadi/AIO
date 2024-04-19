@@ -22,7 +22,7 @@ if ($session->login_id != 88 ) : ?>
 
 <?php 
     $session = \Config\Services::session(); 
-    if ($session->login_id != 38): ?>
+    if ($session->login_id != 38 && $session->login_id != 83): ?>
     <li class="nav-item">
         <a href="<?= base_url('custom/insentif')?>" class="nav-link">
             <i class="nav-icon fa fa-dollar-sign"></i>
@@ -182,7 +182,7 @@ if ($roles->transfer_warehouse_lihat != NULL): ?>
         <a href="<?= base_url('products/transfers') ?>" class="nav-link">
             <i class="nav-icon fas fa-exchange-alt"></i>
             <p>
-                Transfer Barang
+                Transfer Barang 
             </p>
         </a>
     </li>    
@@ -310,6 +310,12 @@ if ($roles->purchase_order_lihat != NULL): ?>
 
 
 <li class="nav-header">Data</li>
+<li class="nav-item">
+    <a href="<?= base_url('products/inden') ?>" class="nav-link">
+        <i class="fa fa-list nav-icon"></i>
+        <p>Barang Inden</p>
+    </a>
+</li>
 <li class="nav-item">
     <a href="<?= base_url('contacts') ?>" class="nav-link">
         <i class="nav-icon fas fa-address-book"></i>

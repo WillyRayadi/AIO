@@ -45,10 +45,10 @@ Pembelian Barang (PD)
                                 <td><?= $good_buy->number ?></td>
                                 <td><?= $good_buy->contact_name ?></td>
                                 <td><?= $good_buy->warehouse_name ?></td>
-                                <td><?= $good_buy->date ?></td>
+                                <td><?= $good_buy->date ?></td> 
                                 <td><?= $good_buy->notes ?></td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('audit/product_buys_manage') . '/' . $good_buy->id ?>" title="Kelola" class="btn btn-success btn-sm text-white">
+                                    <a href="<?= base_url('audit/product/buys/manage') . '/' . $good_buy->id ?>" title="Kelola" class="btn btn-success btn-sm text-white">
                                         <i class='fa fa-cog'></i>
                                     </a>
                                 </td>

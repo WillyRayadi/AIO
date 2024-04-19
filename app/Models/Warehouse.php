@@ -16,6 +16,7 @@ class Warehouse extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'code',
+        'branch_id',
         'name',
         'address',
         'details',

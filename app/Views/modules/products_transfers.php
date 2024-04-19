@@ -109,10 +109,10 @@ Transfer Barang
 <div class="row">
     <div class="col-md-12">
     <?php
-    $this->db = \Config\Database::connect();
+    $db = \Config\Database::connect();
     $session = \Config\Services::session(); 
-    $admins = $this->db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
-    $roles =  $this->db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
+    $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
+    $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
     if($roles->transfer_warehouse_buat != NULL): ?>
     <a href="<?= base_url('products/transfers/add') ?>" class='btn btn-primary float-right mb-2' data-toggle="modal" data-target="#modalAdd">
@@ -191,10 +191,10 @@ Transfer Barang
                                 <td class='text-center'> 
                                 
                                     <?php
-                                    $this->db = \Config\Database::connect();
+                                    $db = \Config\Database::connect();
                                     $session = \Config\Services::session(); 
-                                    $admins = $this->db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
-                                    $roles =  $this->db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
+                                    $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
+                                    $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
                                     if($roles->transfer_warehouse_buat != NULL): ?>
 
@@ -204,10 +204,10 @@ Transfer Barang
                                     <?php endif ?>
                                     
                                     <?php
-                                    $this->db = \Config\Database::connect();
+                                    $db = \Config\Database::connect();
                                     $session = \Config\Services::session(); 
-                                    $admins = $this->db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
-                                    $roles =  $this->db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
+                                    $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
+                                    $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
                                     if($roles->transfer_warehouse_hapus != NULL ): ?>
                                         <?php 

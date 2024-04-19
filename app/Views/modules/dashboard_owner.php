@@ -35,11 +35,11 @@ Dashboard
                 //     $lastYear = date("Y") - 1;
                 //     $lastMonth = 12;
                 // }
-
-                if ($thisMonth > 1) {
+                
+                if($thisMonth > 1){
                     $lastYear = date("Y");
                     $lastMonth = $lastMonth;
-                } else {
+                }else{
                     $lastYear = date("Y") - 1;
                     $lastMonth = 12;
                 }
@@ -50,24 +50,24 @@ Dashboard
                 $times->where('sales.time_create !=', NULL);
 
                 // Add the conditions for the last month
-                if (date("j") > 20) {
-                    $times->where("transaction_date >=", date("Y-" . $thisMonth . "-01"));
-                    $times->where("transaction_date <=", date("Y-" . $thisMonth . "-31"));
-                } else {
-                    $times->where("transaction_date >=", date("Y-" . $thisMonth . "-01"));
-                    $times->where("transaction_date <=", date("Y-" . $thisMonth . "-31"));
+                if(date("j") > 20){
+                    $times->where("transaction_date >=",date("Y-".$thisMonth."-01"));
+                    $times->where("transaction_date <=",date("Y-".$thisMonth."-31"));
+                }else{
+                    $times->where("transaction_date >=",date("Y-".$thisMonth."-01"));
+                    $times->where("transaction_date <=",date("Y-".$thisMonth."-31"));
                 }
                 $times = $times->get();
                 $averageSeconds = $times->getRow()->average_seconds;
 
                 // Calculate average time
                 $days = floor($averageSeconds / (60 * 60 * 24));
-                $averageSeconds = (60 * 60 * 24);
+                $averageSeconds %= (60 * 60 * 24);
                 $hours = floor($averageSeconds / (60 * 60));
-                $averageSeconds = (60 * 60);
+                $averageSeconds %= (60 * 60);
                 $minutes = floor($averageSeconds / 60);
                 $seconds = $averageSeconds % 60;
-
+    
                 // Display the result
                 echo "Rata-rata pengiriman bulan ini: ";
                 if ($days > 0) {
@@ -146,7 +146,7 @@ Dashboard
         <div class="card-header bg-info">
             <h5 class="card-title">Penjualan Disetujui</h5>
         </div>
-        <div class="card-body">
+        <div class="card-body"> 
             <table class="table table-striped table-bordered table-responsive" id="datatables-default">
                 <thead>
                     <tr>
@@ -160,34 +160,34 @@ Dashboard
                 </thead>
                 <tbody>
                     <?php
-                    $sales = $db->table('sales');
-                    $sales->select([
-                        'sales.status',
-                        'contacts.address',
-                        'sales.id as sale_id',
-                        'sales.number as sale_number',
-                        'contacts.name as contact_name',
-                        'administrators.name as admin_name',
-                        'sales.transaction_date as sale_date',
-                    ]);
-                    $sales->join('contacts', 'sales.contact_id = contacts.id', 'left');
-                    $sales->join('administrators', 'sales.admin_id = administrators.id', 'left');
-                    $sales->where('sales.contact_id !=', NULL);
-                    $sales->where('sales.status', 2);
-                    $sales->orderBy('sales.id', 'desc');
-                    $sales = $sales->get();
-                    $sales = $sales->getResultObject();
-
-                    foreach ($sales as $sale) {
+                        $sales = $db->table('sales');
+                        $sales->select([
+                            'sales.status',
+                            'contacts.address',
+                            'sales.id as sale_id',
+                            'sales.number as sale_number',
+                            'contacts.name as contact_name',
+                            'administrators.name as admin_name',
+                            'sales.transaction_date as sale_date',
+                        ]);
+                        $sales->join('contacts', 'sales.contact_id = contacts.id', 'left');
+                        $sales->join('administrators', 'sales.admin_id = administrators.id', 'left');
+                        $sales->where('sales.contact_id !=', NULL);
+                        $sales->where('sales.status', 2);
+                        $sales->orderBy('sales.id','desc');
+                        $sales = $sales->get();
+                        $sales = $sales->getResultObject();
+                        
+                        foreach($sales as $sale){
                     ?>
-                        <tr>
-                            <td><a href="<?= base_url('sales/' . $sale->sale_id . '/manage') ?>"><?= $sale->sale_number ?></a></td>
-                            <td><?= $sale->admin_name ?></td>
-                            <td><?= $sale->contact_name ?></td>
-                            <td class="text-center"><?= $sale->sale_date ?></td>
-                            <td><?= $sale->address ?></td>
-                            <td class="text-center"><span class="badge badge-<?= config("App")->orderStatusColor[$sale->status] ?>"><?= config("App")->orderStatuses[$sale->status] ?></span></td>
-                        </tr>
+                    <tr>
+                        <td><a href="<?= base_url('sales/'.$sale->sale_id.'/manage') ?>"><?= $sale->sale_number ?></a></td>
+                        <td><?= $sale->admin_name ?></td>
+                        <td><?= $sale->contact_name ?></td>
+                        <td class="text-center"><?= $sale->sale_date ?></td>
+                        <td><?= $sale->address ?></td>
+                        <td class="text-center"><span class="badge badge-<?= config("App")->orderStatusColor[$sale->status] ?>"><?= config("App")->orderStatuses[$sale->status] ?></span></td>
+                    </tr>
                     <?php } ?>
                 </tbody>
             </table>
@@ -198,73 +198,71 @@ Dashboard
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-
-        function exportToExcel(data) {
-            const URL = "<?= base_url('report/sales/bonus') ?>";
-            $.ajax({
+    $(document).ready(function(){
+        
+      function exportToExcel(data)
+      {
+          const URL = "<?= base_url('report/sales/bonus') ?>";
+          $.ajax({
                 url: URL,
                 type: "GET",
                 data: {
                     data: JSON.stringify(data)
                 },
-                success: function(response) {
+                success: function(response){
                     window.location = URL + "?data=" + JSON.stringify(data);
                 }
-            });
-        }
-
-        $("#Filter").on("click", function() {
-            const bonusURL = "<?= base_url('ajax/get/all/bonus') ?>";
-
-            // Check if table pencapaian already has DataTable
-            if ($.fn.DataTable.isDataTable("#pencapaian")) {
+          });
+      }
+        
+       $("#Filter").on("click", function(){
+           const bonusURL = "<?= base_url('ajax/get/all/bonus') ?>";
+           
+           // Check if table pencapaian already has DataTable
+           if($.fn.DataTable.isDataTable("#pencapaian")){
                 // if so then destroy it
                 $('#pencapaian').DataTable().destroy();
-            }
-
-            $("#pencapaian").DataTable({
-                dom: "Bfrtip",
-                "bPaginate": false,
-                searching: false,
-                ajax: {
-                    url: bonusURL,
-                    dataSrc: "",
-                    type: "GET",
-                    data: {
-                        startDate: $("#startDate").val(),
-                        endDate: $("#endDate").val()
-                    },
-                },
-                columns: [{
-                        data: "No",
-                        render: function(data, type, row, meta) {
-                            return meta.row + 1;
-                        }
-                    },
-                    {
-                        data: "sales"
-                    },
-                    {
-                        data: "bonus",
-                        render: function(data, type, row) {
-                            return new Intl.NumberFormat("id-ID", {
-                                style: "currency",
-                                currency: "IDR",
-                                minimumFractionDigits: 0
-                            }).format(data);
-                        }
-                    }
+           }
+           
+           $("#pencapaian").DataTable({
+               dom: "Bfrtip",
+               "bPaginate": false,
+               searching: false,
+               ajax: {
+                  url: bonusURL,
+                  dataSrc: "",
+                  type: "GET",
+                  data: {
+                      startDate: $("#startDate").val(),
+                      endDate: $("#endDate").val()
+                  },
+               },
+               columns: [
+                  {data: "No",
+                   render: function(data,type,row,meta){
+                       return meta.row + 1;
+                   }
+                  },
+                  {data: "sales"},
+                  {data: "bonus",
+                   render: function(data, type, row){
+                       return new Intl.NumberFormat("id-ID", {
+                           style: "currency",
+                           currency: "IDR",
+                           minimumFractionDigits: 0
+                       }).format(data);
+                   }
+                  }
                 ]
-            }).ajax.reload();
-            $('#export').show();
-        });
-
-        $('#exportBtn').on("click", function() {
-            const rows = Array.from(document.querySelectorAll("#tableBody tr"));
-            const data = rows.map(row => Array.from(row.querySelectorAll("td")).map(cell => cell.innerText));
-            exportToExcel(data);
-        });
+           }).ajax.reload();
+           $('#export').show();
+       }); 
+       
+      $('#exportBtn').on("click", function() {
+          const rows = Array.from(document.querySelectorAll("#tableBody tr"));
+          const data = rows.map(row => Array.from(row.querySelectorAll("td")).map(cell => cell.innerText));
+          exportToExcel(data);
+      });
     });
 </script>
 

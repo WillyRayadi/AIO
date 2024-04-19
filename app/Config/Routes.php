@@ -39,12 +39,10 @@ require "Routes/BuyItems.php";
 require "Routes/PaymentTerms.php";
 require "Routes/Tags.php";
 require "Routes/Contact.php";
-require "Routes/Vehicle.php";
-require "Routes/Kota.php";
-require "Routes/Accounting.php";
-
-
-
+require "Routes/Vehicle.php"; 
+require "Routes/Partner.php";
+ 
+require "Routes/ServiceCenter.php";
 
 require "Routes/Supplier.php";
 require "Routes/Product.php";

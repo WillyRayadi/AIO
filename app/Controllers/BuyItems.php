@@ -90,8 +90,6 @@ class BuyItems extends Admin
             foreach ($good_buy_items as $good_buy_item) {
                 $sumBuyTable = $sumBuyTable + ($good_buy_item->quantity * $good_buy_item->price);
             }
-            // dd($good_buys);
-            // $countOfprice = array_sum($this->goodBuyItems->where(['buy_id' => $goodBuysID])->findColumn('price'));
             
             $tax = ((int)$good_buys->tax / 100 *  $sumBuyTable);
             $discount = ((int)$good_buys->discount / 100 *  $sumBuyTable);
@@ -290,6 +288,25 @@ class BuyItems extends Admin
             $this->session->setFlashdata('message_type', 'danger');
             $this->session->setFlashdata('message_content', 'Data gagal dihapus');
             return redirect()->to(base_url('products/buys/manage/' . $goodBuysId));
+        }
+    }
+    
+    public function products_purchase_delete_admin($goodBuysId, $goodBuyItemsId)
+    {
+        $goodBuyItems = $this->buyItemsModel->find($goodBuyItemsId);
+        if ($goodBuyItems) {
+            $this->buyItemsModel->delete($goodBuyItemsId);
+            $this->stocksModel->where(['buy_id' => $goodBuysId, 'buy_item_id' => $goodBuyItemsId])->delete();
+            $this->session->setFlashdata('message_type', 'success');
+            $this->session->setFlashdata('message_content', 'Data berhasil dihapus');
+
+            $this->productStockModel->where("buy_item_id",$goodBuyItemsId)->delete();
+
+            return redirect()->to(base_url('products/buy/manage/' . $goodBuysId));
+        } else {
+            $this->session->setFlashdata('message_type', 'danger');
+            $this->session->setFlashdata('message_content', 'Data gagal dihapus');
+            return redirect()->to(base_url('products/buy/manage/' . $goodBuysId));
         }
     }
 

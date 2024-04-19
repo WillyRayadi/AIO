@@ -48,3 +48,5 @@ $routes->get("products/get/all/indent/quantity", "Product::ajaxGetAllIndentQuant
 $routes->get("products/get/location/indent", "Product::ajaxGetIndentLocation");
 
 $routes->get("products/export/all/qty", 'Product::export_quantitys');
+
+

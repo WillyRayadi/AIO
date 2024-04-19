@@ -16,20 +16,33 @@ Penjualan (SO)
         <h5 class="card-title">Penjualan (SO)</h5>
     </div>
     <div class="card-body">
-        <table class="table table-bordered table-striped" id="salesOrder">
+        <table class="table table-bordered table-striped" id="datatables-default">
             <thead>
                 <tr>
-                    <th>No</th>
-                    <th>Tgl. Transaksi</th>
-                    <th>Sales</th>
-                    <th>Pelanggan</th>
-                    <th>Status</th>
-                    <th>Tags</th>
-                    <th>Aksi</th>
+                    <th class="text-center">No</th>
+                    <th class="text-center">Tanggal Transaksi</th>
+                    <th class="text-center">Nama Sales</th>
+                    <th class="text-center">Nama Pelanggan</th>
+                    <th class="text-center">Tag sales</th>
+                    <th class="text-center">Aksi</th>
                 </tr>
             </thead>
             <tbody>
-
+                <?php 
+                    foreach ($sales as $sale) {
+                ?>
+                <tr>
+                    <td class="text-center"><?= $sale->sale_number ?></td>
+                    <td class="text-center"><?= $sale->transaction_date ?></td>
+                    <td class="text-center"><?= $sale->admin_name ?></td>
+                    <td class="text-center"><?= $sale->contact_name ?></td>
+                    <td class='text-center'><?= $sale->tag_name ?></td>
+                    <td class="text-center"><a href="<?= base_url('owner/sales/'.$sale->id.'/manage') ?>" class="btn btn-sm btn-success"><i class="fas fa-cog"></i></a>
+                    </td>
+                </tr> 
+                <?php
+                    }
+                ?>
             </tbody>
         </table>
     </div>
@@ -37,63 +50,6 @@ Penjualan (SO)
 
 <?= $this->endSection() ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <?= $this->section("page_script") ?>
-<script>
-    $(document).ready(function() {
-
-        $('#salesOrder').DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: '<?= base_url("ajax/sales") ?>',
-            order: [],
-            columns: [{
-                    data: "number"
-                },
-                {
-                    data: "transaction_date"
-                },
-                {
-                    data: "admin_name"
-                },
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        return "<p class='contacts'>" + row.contact_name + " | " + row.contact_phone + "</p>";
-                    }
-                },
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        const status = row.status;
-
-                        if (status == 1) {
-                            return '<span class="badge badge-warning">Menunggu Persetujuan</span>';
-                        } else if (status == 2) {
-                            return '<span class="badge badge-success">Disetujui</span>';
-                        } else if (status == 3) {
-                            return '<span class="badge badge-danger">Dibatalkan</span>';
-                        } else if (status == 4) {
-                            return '<span class="badge badge-primary">Dikirim Sebagian</span>';
-                        } else if (status == 5) {
-                            return '<span class="badge badge-info">Dikirim</span>';
-                        } else if (status == 6) {
-                            return '<span class="badge badge-dark">Selesai</span>';
-                        }
-                    }
-                },
-                {
-                    data: "tags"
-                },
-                {
-                    data: null,
-                    render: function(data, type, row) {
-                        return '<a href="<?= base_url('sales') ?>/' + row.id + '/manage" class="btn btn-success btn-sm" title="Kelola Pesanan Penjualan"><i class="fa fa-cog"></i></a>';
-                    }
-                }
-            ]
-        });
-    });
-</script>
 
 <?= $this->endSection() ?>

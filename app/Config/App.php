@@ -29,31 +29,32 @@ class App extends BaseConfig
      *
      * @var string
      */
-    // public $baseURL = 'https://stokaio.com/';
-    public $baseURL = 'http://localhost/StockAIO/';
+    //public $baseURL = 'https://stokaio.com/';
+    public $baseURL = 'http://localhost/StocksAIO/';
 
     public $months = ([
         "",
-        "January", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        "January","Februari","Maret","April","Mei","Juni","Juli"
+        ,"Agustus","September","Oktober","November","Desember"
     ]);
 
-    public $kPrice = 20;
-
-    public $needApprovers = (["", "Supervisor Retail", "Supervisor Grosir", "Owner"]);
+  	public $kPrice = 20;
+  
+    public $needApprovers = (["","Supervisor Retail","Supervisor Grosir","Owner"]);
     public $roles = ([
-        "", "Administrator", "Sales Retail", "Sales Grosir", "Supervisor Retail",
-        "Supervisor Grosir", "Gudang", "Owner", "Audit", "Cashier", "Accounting"
+        "","Administrator","Sales Retail","Sales Wholesale","SPV Retail",
+        "SPV Wholesale","Warehouse","Owner","Internal Audit","Cashier","Service Center","Partner",
     ]);
 
     public $product_price_status_colors = ([
-        "warning", "success", "danger"
+        "warning","success","danger"
     ]);
     public $product_price_statuses = ([
-        "Menunggu", "Disetujui", "Tidak Disetujui"
+        "Menunggu","Disetujui","Tidak Disetujui"
     ]);
 
     public $promoTypes = ([
-        "", "Potongan Harga", "Bundling"
+        "","Potongan Harga","Bundling"
     ]);
 
     public $uncategorized = "Tidak Terdefinisi";
@@ -67,10 +68,10 @@ class App extends BaseConfig
         "Menunggu Persetujuan",
         "Disetujui",
         "Dibatalkan",
-        "Dikirim Sebagian",
+      	"Dikirim Sebagian",
         "Dikirim",
         "Selesai",
-        "", "", ""
+        "","",""
     ]);
 
     public $orderStatusColor = ([
@@ -78,12 +79,12 @@ class App extends BaseConfig
         "warning",
         "success",
         "danger",
-        "primary",
+      	"primary",
         "info",
         "dark",
-        "", "", ""
+        "","",""
     ]);
-
+  
     // public $orderStatuses = ([
     //     "",
     //     "Menunggu",

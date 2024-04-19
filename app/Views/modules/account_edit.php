@@ -100,7 +100,7 @@ Edit Akun
                                 <label>Role</label>
                                 <select name='role' class='form-control'>
                                     <?php
-                                    for($r =1; $r <= 10; $r++){
+                                    for($r=1; $r<=11; $r++){
                                         if($r == $dataAccount->role){
                                             $selectedRole = "selected";
                                         }else{

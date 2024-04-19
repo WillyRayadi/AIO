@@ -1,14 +1,12 @@
 <?php
 
 namespace App\Controllers;
-
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
-use \App\Controllers\BaseController;
-use GuzzleHttp\Client;
+use Hermawan\DataTables\DataTable;
 
 class Product extends Admin
 {
@@ -31,9 +29,8 @@ class Product extends Admin
     private $voucherModel;
     private $deliveryModel;
     private $userModel;
-    private $clients;
     private $baseController;
-
+    
     public function __construct()
     {
         $this->session = \Config\Services::session();
@@ -58,42 +55,40 @@ class Product extends Admin
         $this->voucherModel = model("App\Models\Voucher");
         $this->deliveryModel = model("App\Models\DeliveryItem");
         $this->userModel = model("App\Models\Administrator");
-        $this->clients = new Client();
         $this->baseController = new \App\Controllers\BaseController();
-
+        
         helper("form");
 
-        if ($this->session->login_id == null) {
+        if($this->session->login_id == null){            
             $this->session->setFlashdata('msg', 'Maaf, Silahkan login terlebih dahulu!');
-            header("location:" . base_url('/'));
+            header("location:".base_url('/'));
             exit();
-        } else {
-            if (config("Login")->loginRole != 1) {
-                if (config("Login")->loginRole != 8) {
-                    if (config("Login")->loginRole != 4) {
-                        if (config("Login")->loginRole != 5) {
-                            if (config("Login")->loginRole != 7) {
-                                header("location:" . base_url('/dashboard'));
-                                exit();
-                            }
-                        }
-                    }
+        }else{
+            if(config("Login")->loginRole != 1){
+                if(config("Login")->loginRole != 8){
+                if(config("Login")->loginRole != 4){
+                    if(config("Login")->loginRole != 5){
+                if(config("Login")->loginRole != 7){
+                    header("location:".base_url('/dashboard'));
+                    exit();
                 }
+                }
+              }
+            }
             }
         }
     }
-
-    public function upload_file_image()
-    {
+    
+    public function upload_file_image(){
         $id = $this->request->getPost('id');
 
         $products = $this->goodsModel
-            ->select([
-                'products.id',
-                'products.name'
-            ])
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->select([
+            'products.id',
+            'products.name'
+        ])
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
         $validationRule = [
             'file' => [
@@ -102,27 +97,27 @@ class Product extends Admin
             ],
         ];
 
-        if (!$this->validate($validationRule)) {
+        if (! $this->validate($validationRule)) {
             print_r($this->validator->getErrors());
             $errors = $this->validator->getErrors();
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', $errors['file']);
 
             return redirect()->back();
-        }
-
+        }        
+        
         $filename = $_FILES['file']['name'];
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        $rename_file = "product_id_" . $id . "." . $ext;
+        $rename_file = "product_id_".$id.".".$ext;
         $uploaddir = './public/product_image/';
         $alamatfile = $uploaddir . $rename_file;
 
         move_uploaded_file($_FILES['file']['tmp_name'], $alamatfile);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files" => $rename_file])
-            ->update();
+        ->where("products.id",$id)
+        ->set(["files"=>$rename_file])
+        ->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Gambar Produk Berhasil Di upload");
@@ -130,17 +125,16 @@ class Product extends Admin
         return redirect()->back();
     }
 
-    public function upload_files1_images()
-    {
+    public function upload_files1_images(){
         $id = $this->request->getPost('id');
 
         $products = $this->goodsModel
-            ->select([
-                'products.id',
-                'products.name'
-            ])
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->select([
+            'products.id',
+            'products.name'
+        ])
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
         $validationRule = [
             'file' => [
@@ -149,45 +143,44 @@ class Product extends Admin
             ],
         ];
 
-        if (!$this->validate($validationRule)) {
+        if (! $this->validate($validationRule)) {
             print_r($this->validator->getErrors());
             $errors = $this->validator->getErrors();
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', $errors['file']);
 
             return redirect()->back();
-        }
-
+        }        
+        
         $filename = $_FILES['file']['name'];
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        $rename_file = "product_id_behind_" . $id . "." . $ext;
+        $rename_file = "product_id_behind_".$id.".".$ext;
         $uploaddir = './public/product_image/';
         $alamatfile = $uploaddir . $rename_file;
 
         move_uploaded_file($_FILES['file']['tmp_name'], $alamatfile);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files1" => $rename_file])
-            ->update();
+        ->where("products.id",$id)
+        ->set(["files1"=>$rename_file])
+        ->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Gambar Produk Berhasil Di upload");
 
         return redirect()->back();
     }
-
-    public function upload_files2_images()
-    {
+    
+    public function upload_files2_images(){
         $id = $this->request->getPost('id');
 
         $products = $this->goodsModel
-            ->select([
-                'products.id',
-                'products.name'
-            ])
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->select([
+            'products.id',
+            'products.name'
+        ])
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
         $validationRule = [
             'file' => [
@@ -196,27 +189,27 @@ class Product extends Admin
             ],
         ];
 
-        if (!$this->validate($validationRule)) {
+        if (! $this->validate($validationRule)) {
             print_r($this->validator->getErrors());
             $errors = $this->validator->getErrors();
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', $errors['file']);
 
             return redirect()->back();
-        }
-
+        }        
+        
         $filename = $_FILES['file']['name'];
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        $rename_file = "product_id_left" . $id . "." . $ext;
+        $rename_file = "product_id_left".$id.".".$ext;
         $uploaddir = './public/product_image/';
         $alamatfile = $uploaddir . $rename_file;
 
         move_uploaded_file($_FILES['file']['tmp_name'], $alamatfile);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files2" => $rename_file])
-            ->update();
+        ->where("products.id",$id)
+        ->set(["files2"=>$rename_file])
+        ->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Gambar Produk Berhasil Di upload");
@@ -224,18 +217,17 @@ class Product extends Admin
         return redirect()->back();
     }
 
-
-    public function upload_files3_images()
-    {
+    
+    public function upload_files3_images(){
         $id = $this->request->getPost('id');
 
         $products = $this->goodsModel
-            ->select([
-                'products.id',
-                'products.name'
-            ])
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->select([
+            'products.id',
+            'products.name'
+        ])
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
         $validationRule = [
             'file' => [
@@ -244,27 +236,27 @@ class Product extends Admin
             ],
         ];
 
-        if (!$this->validate($validationRule)) {
+        if (! $this->validate($validationRule)) {
             print_r($this->validator->getErrors());
             $errors = $this->validator->getErrors();
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', $errors['file']);
 
             return redirect()->back();
-        }
-
+        }        
+        
         $filename = $_FILES['file']['name'];
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
-        $rename_file = "product_id_right" . $id . "." . $ext;
+        $rename_file = "product_id_right".$id.".".$ext;
         $uploaddir = './public/product_image/';
         $alamatfile = $uploaddir . $rename_file;
 
         move_uploaded_file($_FILES['file']['tmp_name'], $alamatfile);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files3" => $rename_file])
-            ->update();
+        ->where("products.id",$id)
+        ->set(["files3"=>$rename_file])
+        ->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Gambar Produk Berhasil Di upload");
@@ -272,24 +264,23 @@ class Product extends Admin
         return redirect()->back();
     }
 
-    public function delete_image_product($id)
-    {
+    public function delete_image_product($id){
         $products = $this->goodsModel
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
-        if ($products->files == NULL) {
+        if($products->files == NULL){
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', "Gambar gagal dihapus");
 
             return redirect()->back();
         }
 
-        unlink('./public/product_image/' . $products->files);
+        unlink('./public/product_image/'.$products->files);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files" => NULL])->update();
+        ->where("products.id",$id)
+        ->set(["files" => NULL])->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Berkas pengiriman berhasil dihapus");
@@ -297,24 +288,23 @@ class Product extends Admin
         return redirect()->back();
     }
 
-    public function delete_file_behind_product($id)
-    {
+    public function delete_file_behind_product($id){
         $products = $this->goodsModel
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
-        if ($products->files1 == NULL) {
+        if($products->files1 == NULL){
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', "Gambar gagal dihapus");
 
             return redirect()->back();
         }
 
-        unlink('./public/product_image/' . $products->files1);
+        unlink('./public/product_image/'.$products->files1);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files1" => NULL])->update();
+        ->where("products.id",$id)
+        ->set(["files1" => NULL])->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Berkas pengiriman berhasil dihapus");
@@ -322,24 +312,23 @@ class Product extends Admin
         return redirect()->back();
     }
 
-    public function delete_file_left_product($id)
-    {
+    public function delete_file_left_product($id){
         $products = $this->goodsModel
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
-        if ($products->files2 == NULL) {
+        if($products->files2 == NULL){
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', "Gambar gagal dihapus");
 
             return redirect()->back();
         }
 
-        unlink('./public/product_image/' . $products->files2);
+        unlink('./public/product_image/'.$products->files2);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files2" => NULL])->update();
+        ->where("products.id",$id)
+        ->set(["files2" => NULL])->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Berkas pengiriman berhasil dihapus");
@@ -347,24 +336,23 @@ class Product extends Admin
         return redirect()->back();
     }
 
-    public function delete_file_right_product($id)
-    {
+    public function delete_file_right_product($id){
         $products = $this->goodsModel
-            ->where('products.id', $id)
-            ->get()->getFirstRow();
+        ->where('products.id', $id)
+        ->get()->getFirstRow();
 
-        if ($products->files3 == NULL) {
+        if($products->files3 == NULL){
             $this->session->setFlashdata('message_type', 'error');
             $this->session->setFlashdata('message_content', "Gambar gagal dihapus");
 
             return redirect()->back();
-        }
+        } 
 
-        unlink('./public/product_image/' . $products->files3);
+        unlink('./public/product_image/'.$products->files3);
 
         $this->goodsModel
-            ->where("products.id", $id)
-            ->set(["files3" => NULL])->update();
+        ->where("products.id",$id)
+        ->set(["files3" => NULL])->update();
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', "Berkas pengiriman berhasil dihapus");
@@ -375,104 +363,106 @@ class Product extends Admin
     public function ajaxGetStocks()
     {
         $product_id = $this->request->getVar("product_id");
-
+        
         $userAllowedWarehouse = $this->userModel
-            ->select(["allow_warehouses"])
-            ->where("administrators.id", $this->session->login_id)
-            ->first();
-
+        ->select(["allow_warehouses"])
+        ->where("administrators.id", $this->session->login_id)
+        ->first();
+        
         if ($userAllowedWarehouse && !empty($userAllowedWarehouse->allow_warehouses)) {
-
+            
             $allowedWarehouse = explode(",", $userAllowedWarehouse->allow_warehouses);
-
+        
             $allowedWarehouse = array_map(function ($item) {
                 return str_replace(['"', "'"], '', $item);
             }, $allowedWarehouse);
-
-
+        
+        
             $allowedWarehouse = array_filter($allowedWarehouse);
+            
         }
-
+        
         $warehouses = $this->warehouseModel->select(["id", "name"])->whereIn("id", $allowedWarehouse)->orderBy("name", "asc")->findAll();
-
+        
         $warehouse_id = array_column($warehouses, "id");
-
+        
         $productStock = $this->productStockModel
-            ->select(["warehouse_id", "SUM(quantity) as stock_quantity"])
-            ->where("product_id", $product_id)
-            ->whereIn("warehouse_id", $warehouse_id)
-            ->groupBy(["product_id", "warehouse_id"])
-            ->findAll();
-
+        ->select(["warehouse_id","SUM(quantity) as stock_quantity"])
+        ->where("product_id", $product_id)
+        ->whereIn("warehouse_id", $warehouse_id)
+        ->groupBy(["product_id", "warehouse_id"])
+        ->findAll();
+        
         $prepareData = $this->prepareStock($warehouses, $productStock);
-
+        
         $json = json_encode($prepareData);
-
+        
         return $json;
+        
     }
-
-    public function prepareStock($warehouses, $productStock)
-    {
+    
+    public function prepareStock($warehouses, $productStock){
         $processData = [];
-        foreach ($warehouses as $warehouse) {
+        foreach($warehouses as $warehouse){
             $rowData = [];
             $warehouse_id = $warehouse->id;
             $stockQty = $this->findStock($productStock, $warehouse_id);
-            $rowData[$warehouse->name] = $stockQty . " Unit";
+            $rowData[$warehouse->name] = $stockQty. " Unit";
             $processData[] = $rowData;
         }
-
+        
         return $processData;
     }
-
+    
     public function findStock($data, $warehouse_id)
     {
-        foreach ($data as $item) {
-            if ($item->warehouse_id == $warehouse_id) {
+        foreach($data as $item)
+        {
+            if($item->warehouse_id == $warehouse_id){
                 return $item->stock_quantity;
             }
         }
-
+        
         return "0";
     }
-
+    
     public function voucher()
     {
-        $data = ["voucher" => $this->voucherModel->select(["products.name as product_name", "voucher.id", "voucher.voucher_value", "voucher.validity_period"])->join("products", "voucher.product_id = products.id", "left")->findAll()];
-
+        $data = ["voucher" => $this->voucherModel->select(["products.name as product_name","voucher.id","voucher.voucher_value", "voucher.validity_period"])->join("products","voucher.product_id = products.id","left")->findAll()];
+        
         return view("modules/voucher", $data);
     }
-
+    
     public function edit_voucher($id)
     {
-        return view("modules/voucher_edit", $data = ["voucher" => $this->voucherModel->find($id), "products" => $this->goodsModel->select(["id", "name"])->orderBy("name", "asc")->findAll()]);
+        return view("modules/voucher_edit", $data = ["voucher" => $this->voucherModel->find($id), "products" => $this->goodsModel->select(["id","name"])->orderBy("name", "asc")->findAll()]);
     }
-
+    
     public function add_voucher()
     {
         $products = $this->request->getVar("product_id");
         $image = $this->request->getFile("image");
         $warehouseName = $this->request->getVar("warehouse_name");
         $quantity = $this->request->getVar("quantity");
-
+        
         $warehouses = $this->warehouseModel->select(["id"])->where("name", $warehouseName)->first();
 
         $imageName = $image->getRandomName();
-
+        
         $image->move('./public/image', $imageName);
-
+        
         // try{
-
+            
         //     $stockQuantity = $this->checkStocks($products, $warehouses->id, $quantity);
-
+            
         // }catch(\Exception $e){
         //     $this->session->setFlashdata('message_type', 'warning');
         //     $this->session->setFlashdata('message_content', 'Kuantitas Melebihi Stok Tersedia');
-
+            
         //     return redirect()->back();
         // }
-
-        $data = [
+        
+         $data = [
             "product_id" => $products,
             "warehouse_id" => $warehouses->id,
             "quantity" => $quantity,
@@ -482,11 +472,11 @@ class Product extends Admin
             "description" => $this->request->getPost("description"),
             "required_points" => $this->request->getPost("required_points"),
         ];
-
+        
         $this->voucherModel->insert($data);
-
+        
         // $voucherID = $this->voucherModel->getInsertID();
-
+        
         // $this->productStockModel->insert([
         //     "product_id" => $products,
         //     "warehouse_id" => $warehouses->id,
@@ -497,30 +487,30 @@ class Product extends Admin
 
         return redirect()->to(base_url("products/voucher"));
     }
-
-    private function checkStocks($productID, $warehouseID, $quantity)
-    {
+    
+    private function checkStocks($productID, $warehouseID, $quantity){
         $productStocks = $this->productStockModel
-            ->select(["SUM(quantity) as stocks"])
-            ->where("product_id", $productID)
-            ->where("warehouse_id", $warehouseID)
-            ->where("sale_item_id IS NULL")
-            ->orderBy("date", "asc")
-            ->first();
-
+        ->select(["SUM(quantity) as stocks"])
+        ->where("product_id", $productID)
+        ->where("warehouse_id", $warehouseID)
+        ->where("sale_item_id IS NULL")
+        ->orderBy("date", "asc")
+        ->first();
+        
         $stockQuantity = $productStocks->stocks;
         $totalStocks = 0;
-
-        if ($quantity <= $stockQuantity) {
+        
+        if($quantity <= $stockQuantity)
+        {
             $totalStocks = -$quantity;
-        } else {
+        }else{
             throw new \Exception('Kuantitas melebihi stok tersedia');
         }
-
-
+        
+        
         return $totalStocks;
     }
-
+    
     public function save_voucher()
     {
         $id = $this->request->getVar("id");
@@ -556,36 +546,36 @@ class Product extends Admin
             "description" => $desc,
             "image" => $imageName
         ];
-
+        
 
         $this->voucherModel->update($id, $data);
 
         return redirect()->to(base_url("products/voucher"));
     }
-
-    public function delete_voucher($id)
-    {
+    
+    public function delete_voucher($id){
         $voucher = $this->voucherModel->find($id);
-
-        $imagePath = './public/image/' . $voucher->image;
-        if (file_exists($imagePath)) {
+        
+        $imagePath = './public/image/'.$voucher->image;
+        if(file_exists($imagePath))
+        {
             unlink($imagePath);
         }
-
+        
         // $this->productStockModel->where("voucher_id", $id)->delete();
-
+        
         $this->voucherModel->delete($id);
-
+        
         return redirect()->to(base_url("products/voucher"));
     }
-
+    
     public function products_categories()
     {
         $products_categories = $this->goodCategoriesModel
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->get()
-            ->getResultObject();
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->get()
+        ->getResultObject();
 
         $data = ([
             "products_categories" => $products_categories,
@@ -661,77 +651,77 @@ class Product extends Admin
             return redirect()->to(base_url('products/categories'));
         }
     }
-
+    
 
     public function fetchProducts()
     {
         $products = $this->goodsModel
-            ->select(["id", "name", "code_id", "sku_number", "capacity_id", "category_id", "unit"])
-            ->where("trash", 0)
-            ->orderBy("name", "asc")
-            ->findAll();
-
+        ->select(["id", "name", "code_id", "sku_number" ,"capacity_id" ,"category_id" , "unit"])
+        ->where("trash", 0)
+        ->orderBy("name", "asc")
+        ->findAll();
+        
         $warehouses = $this->warehouseModel
-            ->select(["id", "name"])
-            ->where("trash", 0)
-            // ->whereNotIn("id", ["10"])
-            ->orderBy("name", "asc")
-            ->findAll();
-
+        ->select(["id", "name"])
+        ->where("trash" , 0)
+        // ->whereNotIn("id", ["10"])
+        ->orderBy("name", "asc")
+        ->findAll();
+        
         $categoryQuery = $this->goodCategoriesModel
-            ->select(["id", "name"])
-            ->whereIn("id", array_column($products, "category_id"))
-            ->findAll();
-
+        ->select(["id", "name"])
+        ->whereIn("id", array_column($products, "category_id"))
+        ->findAll();
+        
         $codeQuery = $this->codeModel->select(["id", "name"])->whereIn("id", array_column($products, "code_id"))->findAll();
         $capacityQuery = $this->capacityModel->select(["id", "kapasitas"])->whereIn("id", array_column($products, "capacity_id"))->findAll();
         $subQuery = $this->subModel->select(["name", "code"])->whereIn("code", array_column($codeQuery, "name"))->findAll();
-
+        
         $productID = array_column($products, "id");
         $warehouseID = array_column($warehouses, "id");
-
-
+        
+        
         $productStocks = $this->productStockModel
-            ->select(["product_id", "warehouse_id", "id", "SUM(quantity) as stock_quantity"])
-            ->whereIn("warehouse_id", $warehouseID)
-            ->whereIn("product_id", $productID)
-            ->groupBy(["warehouse_id", "product_id"])
-            ->findAll();
-
+        ->select(["product_id", "warehouse_id", "id", "SUM(quantity) as stock_quantity"])
+        ->whereIn("warehouse_id", $warehouseID)
+        ->whereIn("product_id", $productID)
+        ->groupBy(["warehouse_id", "product_id"])
+        ->findAll();
+        
         $productRepairs = $this->productRepairModel
-            ->select(["product_id", "id", "SUM(quantity) as repair_quantity"])
-            ->whereIn("product_id", $productID)
-            ->groupBy("product_id")
-            ->findAll();
-
+        ->select(["product_id", "id", "SUM(quantity) as repair_quantity"])
+        ->whereIn("product_id", $productID)
+        ->groupBy("product_id")
+        ->findAll();
+        
         // $productReturns = $this->productReturnModel
         // ->select(["product_id", "id", "SUM(quantity) as return_quantity"])
         // ->whereIn("product_id", $productID)
         // ->groupBy("product_id")
         // ->findAll();
-
+        
         $productSales = $this->saleItemModel
-            ->select(["product_id", "sale_items.id", "SUM(quantity) as sale_quantity"])
-            ->join("sales", "sale_items.sale_id = sales.id", "left")
-            ->whereIn("product_id", $productID)
-            ->where("sales.status <", 5)
-            ->groupBy("product_id")
-            ->findAll();
-
-
+        ->select(["product_id", "sale_items.id", "SUM(quantity) as sale_quantity"])
+        ->join("sales", "sale_items.sale_id = sales.id", "left")
+        ->whereIn("product_id", $productID)
+        ->where("sales.status <", 5)
+        ->groupBy("product_id")
+        ->findAll();
+        
+        
         return [
-            "products" => $products,
-            "warehouses" => $warehouses,
-            "categories" => $categoryQuery,
-            "product_stocks" => $productStocks,
-            "product_repairs" => $productRepairs,
-            "product_capacity" => $capacityQuery,
-            "product_sub_category" => $subQuery,
-            "product_sales" => $productSales,
-            "product_codes" => $codeQuery
+          "products" => $products,
+          "warehouses" => $warehouses,
+          "categories" => $categoryQuery,
+          "product_stocks" => $productStocks,
+          "product_repairs" => $productRepairs,
+          "product_capacity" => $capacityQuery,
+          "product_sub_category" => $subQuery,
+          "product_sales" => $productSales,
+          "product_codes" => $codeQuery
         ];
     }
-
+    
     public function ajaxGetAllIndentQuantity()
     {
         $data = $this->fetchProducts();
@@ -799,24 +789,24 @@ class Product extends Admin
             return $this->response->setJSON(["Error" => "Indent Warehouse Cannot Be Indentified"]);
         }
     }
-
+    
     public function getSalesQuantity()
     {
         $warehouseName = $this->request->getVar("warehouse_id");
-
+        
         $warehouses = $this->warehouseModel->where("trash", 0);
-
-        if (!empty($warehouseName) && $warehouseName != "Pilih") {
+        
+        if(!empty($warehouseName) && $warehouseName != "Pilih"){
             $warehouses->where("id", $warehouseName);
         }
-
+        
         $warehouses = $warehouses->orderBy("name", "asc")->findAll();
-
+        
         $data = $this->fetchProducts();
-
+        
         $products = $data['products'];
         $warehouseID = array_column($warehouses, "id");
-
+        
         // $productSales = $this->saleItemModel
         // ->select(["SUM(sale_items.quantity) as sale_quantity", "sale_items.product_id", "product_stocks.warehouse_id", "sales.id"])
         // ->join("sales", "sale_items.sale_id = sales.id", "left")
@@ -831,7 +821,7 @@ class Product extends Admin
         // if($productSales)
         // {
         //     $productIDs = array_column($products, "id");
-
+            
         //     if($warehouseName == "Pilih")
         //     {
         //         if(count($warehouseID) > 1):
@@ -861,104 +851,105 @@ class Product extends Admin
         //         endif;
         //     }
         // }
-
-
+        
+        
         // $prepareData = $this->prepareSalesQuantity($products, $items, $warehouses, $productSales);
-
+        
         // return $this->response->setJSON($prepareData);
-
-        if ($warehouseName == "Pilih") {
-
+        
+        if($warehouseName == "Pilih"){
+            
             $productSales = $this->saleItemModel
-                ->select(["SUM(sale_items.quantity) as sale_quantity", "sale_items.product_id", "product_stocks.warehouse_id"])
-                ->join("sales", "sale_items.sale_id = sales.id", "left")
-                ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
-                ->whereIn("sale_items.product_id", array_column($products, "id"))
-                ->whereIn("product_stocks.warehouse_id", array_column($warehouses, "id"))
-                ->where("sales.status <", 5)
-                ->groupBy(["sale_items.product_id"])
-                ->findAll();
-
+            ->select(["SUM(sale_items.quantity) as sale_quantity", "sale_items.product_id", "product_stocks.warehouse_id"])
+            ->join("sales", "sale_items.sale_id = sales.id", "left")
+            ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
+            ->whereIn("sale_items.product_id", array_column($products, "id"))
+            ->whereIn("product_stocks.warehouse_id", array_column($warehouses, "id"))
+            ->where("sales.status <", 5)
+            ->groupBy(["sale_items.product_id"])
+            ->findAll();
+            
             $items = $this->deliveryModel
-                ->select(["SUM(delivery_items.quantity) as QtyKeluar", "sale_items.product_id", "product_stocks.warehouse_id"])
-                ->join("sale_items", "delivery_items.sale_item_id = sale_items.id", "left")
-                ->join("sales", "sale_items.sale_id = sales.id", "left")
-                ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
-                ->whereIn("sale_items.product_id", array_column($products, "id"))
-                ->whereIn("product_stocks.warehouse_id", array_column($warehouses, "id"))
-                ->where("sales.status <", 5)
-                ->groupBy(["sale_items.product_id"])
-                ->findAll();
-
+            ->select(["SUM(delivery_items.quantity) as QtyKeluar", "sale_items.product_id", "product_stocks.warehouse_id"])
+            ->join("sale_items", "delivery_items.sale_item_id = sale_items.id", "left")
+            ->join("sales", "sale_items.sale_id = sales.id", "left")
+            ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
+            ->whereIn("sale_items.product_id", array_column($products, "id"))
+            ->whereIn("product_stocks.warehouse_id", array_column($warehouses, "id"))
+            ->where("sales.status <", 5)
+            ->groupBy(["sale_items.product_id"])
+            ->findAll();
+            
             $prepare = $this->prepareSaledQuantity($products, $productSales, $items);
-
+            
             return $this->response->setJSON($prepare);
-        } else {
+        }else{
             $productSales = $this->saleItemModel
-                ->select(["SUM(sale_items.quantity) as sale_quantity", "sale_items.product_id", "product_stocks.warehouse_id"])
-                ->join("sales", "sale_items.sale_id = sales.id", "left")
-                ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
-                ->whereIn("sale_items.product_id", array_column($products, "id"))
-                ->where("product_stocks.warehouse_id", $warehouseName)
-                ->where("sales.status <", 5)
-                ->groupBy(["sale_items.product_id"])
-                ->findAll();
-
+            ->select(["SUM(sale_items.quantity) as sale_quantity", "sale_items.product_id", "product_stocks.warehouse_id"])
+            ->join("sales", "sale_items.sale_id = sales.id", "left")
+            ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
+            ->whereIn("sale_items.product_id", array_column($products, "id"))
+            ->where("product_stocks.warehouse_id", $warehouseName)
+            ->where("sales.status <", 5)
+            ->groupBy(["sale_items.product_id"])
+            ->findAll();
+            
             $items = $this->deliveryModel
-                ->select(["SUM(delivery_items.quantity) as QtyKeluar", "sale_items.product_id", "product_stocks.warehouse_id"])
-                ->join("sale_items", "delivery_items.sale_item_id = sale_items.id", "left")
-                ->join("sales", "sale_items.sale_id = sales.id", "left")
-                ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
-                ->whereIn("sale_items.product_id", array_column($products, "id"))
-                ->where("product_stocks.warehouse_id", $warehouseName)
-                ->where("sales.status <", 5)
-                ->groupBy(["sale_items.product_id"])
-                ->findAll();
-
+            ->select(["SUM(delivery_items.quantity) as QtyKeluar", "sale_items.product_id", "product_stocks.warehouse_id"])
+            ->join("sale_items", "delivery_items.sale_item_id = sale_items.id", "left")
+            ->join("sales", "sale_items.sale_id = sales.id", "left")
+            ->join("product_stocks", "sale_items.id = product_stocks.sale_item_id", "left")
+            ->whereIn("sale_items.product_id", array_column($products, "id"))
+            ->where("product_stocks.warehouse_id", $warehouseName)
+            ->where("sales.status <", 5)
+            ->groupBy(["sale_items.product_id"])
+            ->findAll();
+            
             $prepare = $this->prepareSalesQuantity($products, $warehouses, $productSales, $items);
-
+            
             return $this->response->setJSON($prepare);
         }
+        
     }
-
+    
     protected function prepareSalesQuantity($products, $warehouses, $productSales, $items)
     {
         $data = [];
-        foreach ($products as $product) {
+        foreach($products as $product){
             $rowData = [
-                "product_name" => $product->name
+                "product_name" => $product->name    
             ];
-            foreach ($warehouses as $warehouse) {
+            foreach($warehouses as $warehouse){
                 $saleQuantity = $this->findSaleProductsQuantity($productSales, $product->id, $warehouse->id);
                 $deliveredQuantity = $this->findDeliveredQuantity($items, $product->id, $warehouse->id);
 
-
-                $rowData["sale_quantity"] = $saleQuantity . " Unit";
+                
+                $rowData["sale_quantity"] = $saleQuantity." Unit";
                 $rowData["delivered"] = $deliveredQuantity;
             }
-
-            $data[] = $rowData;
+            
+            $data[] = $rowData; 
         }
-
+        
         return $data;
     }
-
+    
     protected function prepareSaledQuantity($products, $productSales, $items)
     {
         $data = [];
-        foreach ($products as $product) {
+        foreach($products as $product){
             $rowData = [
                 "product_name" => $product->name,
                 "sale_quantity" => $this->findSaleQuantity($productSales, $product->id),
                 "delivered" => $this->findDeliveredProductsQuantity($items, $product->id)
             ];
-
-            $data[] = $rowData;
+    
+            $data[] = $rowData; 
         }
-
+        
         return $data;
     }
-
+    
     private function prepareStockForIndent($products, $productIndent)
     {
         $data = [];
@@ -974,48 +965,50 @@ class Product extends Admin
 
         return $data;
     }
-
+    
     protected function findDeliveredQuantity($data, $productID, $warehouseID)
     {
-        foreach ($data as $item) {
-            if ($item->product_id == $productID && $item->warehouse_id == $warehouseID) {
+        foreach($data as $item)
+        {
+            if($item->product_id == $productID && $item->warehouse_id == $warehouseID){
                 return $item->QtyKeluar;
             }
         }
-
+        
         return "0";
     }
-
+    
     protected function findDeliveredProductsQuantity($data, $productID)
     {
-        foreach ($data as $item) {
-            if ($item->product_id == $productID) {
+        foreach($data as $item)
+        {
+            if($item->product_id == $productID){
                 return $item->QtyKeluar;
             }
         }
-
+        
         return "0";
     }
-
+    
     protected function findSaleProductsQuantity($data, $productID, $warehouseID)
     {
-        foreach ($data as $item) {
-            if ($item->product_id == $productID && $item->warehouse_id == $warehouseID) {
+        foreach($data as $item){
+            if($item->product_id == $productID && $item->warehouse_id == $warehouseID){
                 return $item->sale_quantity;
             }
         }
-
+        
         return "0";
     }
-
+    
     protected function findSaleQuantity($data, $productID)
     {
-        foreach ($data as $item) {
-            if ($item->product_id == $productID) {
+        foreach($data as $item){
+            if($item->product_id == $productID){
                 return $item->sale_quantity;
             }
         }
-
+        
         return "0";
     }
 
@@ -1043,159 +1036,177 @@ class Product extends Admin
 
         return "0";
     }
-
+    
     public function getProducts()
     {
-
+        
         $data = $this->fetchProducts();
-
+        
         $products = $data["products"];
         $warehouses = $data["warehouses"];
         $categoryQuery  = $data["categories"];
         $productStocks = $data["product_stocks"];
         $productSales = $data["product_sales"];
+        
 
-
-        $processData = $this->prepareData($products, $warehouses, $productSales, $categoryQuery, $productStocks);
-
+        $processData = $this->prepareData($products, $warehouses, $productSales,$categoryQuery, $productStocks);
+  
         return $processData;
     }
-
-    protected function prepareData($products, $warehouses, $productSales, $categoryQuery, $productStocks)
+    
+    protected function prepareData($products, $warehouses, $productSales,$categoryQuery, $productStocks)
     {
         $processData = [];
-
-        foreach ($products as $product) {
+        
+        foreach($products as $product)
+        {
             $rowData = [
                 "product_id" => $product->id,
                 "product_name" => $product->name,
                 "category_name" => $this->findName($categoryQuery, $product->category_id),
-                "sales_quantity" => $this->findSalesQuantity($productSales, $product->id) . " " . $product->unit
+                "sales_quantity" => $this->findSalesQuantity($productSales, $product->id)." ".$product->unit
             ];
-
-            foreach ($warehouses as $warehouse) {
+            
+            foreach($warehouses as $warehouse)
+            {
                 $stockQuantity = $this->findStockQuantity($productStocks, $product->id, $warehouse->id);
-                $rowData["stocks_" . $warehouse->name] = $stockQuantity . " " . $product->unit;
+                $rowData["stocks_".$warehouse->name] = $stockQuantity. " ".$product->unit;
             }
-
+            
             $processData[] = $rowData;
         }
-
+        
         return $processData;
     }
-
+    
     protected function findName($data, $productId)
     {
-        foreach ($data as $item) {
-            if ($item->id == $productId) {
+        foreach($data as $item)
+        {
+            if($item->id == $productId){
                 return $item->name;
             }
         }
-
+        
         return "";
     }
-
+    
     protected function findStockQuantity($data, $productId, $warehouseId)
     {
-        foreach ($data as $item) {
-            if ($item->warehouse_id == $warehouseId && $item->product_id == $productId) {
-                return $item->stock_quantity;
-            }
+        foreach($data as $item)
+        {
+         if($item->warehouse_id == $warehouseId && $item->product_id == $productId)
+         {
+            return $item->stock_quantity;
+         }
         }
-
+        
         return 0;
     }
-
+    
     protected function findRepairsQuantity($data, $productId)
     {
-        foreach ($data as $item) {
-            if ($item->product_id == $productId) {
+        foreach($data as $item)
+        {
+            if($item->product_id == $productId)
+            {
                 return $item->repair_quantity;
             }
         }
-
+        
         return 0;
     }
-
+    
     protected function findReturnsQuantity($data, $productId)
     {
-        foreach ($data as $item) {
-            if ($item->product_id == $productId) {
+        foreach($data as $item)
+        {
+            if($item->product_id == $productId)
+            {
                 return $item->return_quantity;
             }
         }
-
+        
         return 0;
     }
-
+    
     protected function findSalesQuantity($data, $productId)
     {
-        foreach ($data as $item) {
-            if ($item->product_id == $productId) {
+        foreach($data as $item)
+        {
+            if($item->product_id == $productId)
+            {
                 return $item->sale_quantity;
             }
         }
-
+        
         return 0;
     }
-
+    
     protected function findCapacity($data, $product_capacity)
     {
-        foreach ($data as $item) {
-            if ($item->id == $product_capacity) {
+        foreach($data as $item)
+        {
+            if($item->id == $product_capacity)
+            {
                 return $item->kapasitas;
             }
         }
-
+        
         return "-";
     }
-
+    
     protected function findCategory($data, $product_category)
     {
-        foreach ($data as $item) {
-            if ($item->id == $product_category) {
+        foreach($data as $item)
+        {
+            if($item->id == $product_category)
+            {
                 return $item->name;
             }
         }
-
+        
         return "-";
     }
-
+    
     protected function findSubCategory($data, $code)
     {
-        foreach ($data as $item) {
-            if ($item->code == $code) {
+        foreach($data as $item)
+        {
+            if($item->code == $code)
+            {
                 return $item->name;
             }
         }
-
+        
         return "-";
     }
-
+    
     public function kapasitas()
     {
         $data = [
             "Kapasitas" => $this->capacityModel->findAll()
         ];
-
+        
         return view("modules/capacity", $data);
     }
-
+    
     public function insert_capacity()
     {
         $data = [
-            "kapasitas" => $this->request->getPost("kapasitas")
+            "kapasitas" => $this->request->getPost("kapasitas")   
         ];
-
+        
         $this->capacityModel->insert($data);
         return redirect()->to(base_url("products/capacity"));
     }
-
+    
     public function delete_capacity($id)
     {
         $this->capacityModel->delete($id);
         return redirect()->to(base_url("products/capacity"));
     }
+    
 
     public function products()
     {
@@ -1204,7 +1215,7 @@ class Product extends Admin
             ->orderBy("name", "asc")
             ->get()
             ->getResultObject();
-
+            
         $warehouses = $this->warehouseModel
             ->where("trash", 0)
             // ->whereNotIn("id", ['6'])
@@ -1219,13 +1230,13 @@ class Product extends Admin
             ->where("trash", 0)
             ->orderBy("name", "asc")
             ->findAll();
-
+        
         $prices = $this->productPriceModel
             ->orderBy("code", "asc")
             ->findAll();
-
+    
         $brand = $this->brandModel->findAll();
-
+        
         $capacity = $this->capacityModel->findAll();
 
         $data = ([
@@ -1244,7 +1255,7 @@ class Product extends Admin
 
         return view('modules/products', $data);
     }
-
+    
     public function ajaxGetCategories()
     {
         $subItemsByCategory = array();
@@ -1254,7 +1265,7 @@ class Product extends Admin
             $sub = $this->subModel->where('category_id', $value->id)->orderBy("name", "asc")->findAll();
             $subItemsByCategory[$value->id] = $sub;
         }
-
+        
         // $category_id = $this->request->getPost("category_id");
         // $subCategory = $this->subModel->where("category_id", $category_id)->orderBy("name","asc")->findAll();
 
@@ -1262,25 +1273,24 @@ class Product extends Admin
 
         return $json;
     }
-
-    public function ajaxGetSubs()
-    {
+    
+    public function ajaxGetSubs(){
         $category_id = $this->request->getVar("category_id");
-
+        
         $subs = $this->subModel->where("category_id", $category_id)->findAll();
         $json = json_encode($subs);
-
+        
         return $json;
     }
-
+    
     public function ajaxGetProducts()
     {
         $products = $this->goodsModel->select(["id", "name"])->orderBy("name", "asc")->findAll();
         $json = json_encode($products);
-
+        
         return $json;
     }
-
+    
     public function ajaxGetSKU()
     {
         $Products = $this->goodsModel->select("sku_number")->findAll();
@@ -1297,12 +1307,12 @@ class Product extends Admin
         $name = strtoupper($this->request->getPost('name'));
         $unit = $this->request->getPost('unit');
         /// $stock = $this->request->getPost('stock');
-        if (!empty($code_id)) {
+        if(!empty($code_id)){
             $id = explode("|", $code_id);
             $codes = $id[0];
             $id_code = $this->codeModel->where("name", $codes)->first();
             $id_codes = $id_code->id;
-        } else {
+        }else{
             $codes = "-";
             $id_codes = "-";
         }
@@ -1336,39 +1346,15 @@ class Product extends Admin
         // dapatkan good_id
         $good_id = $this->goodsModel->getInsertID($data_goods);
 
-        $token = $this->baseController->getLatestToken();
-
-        $response = $this->clients->request("POST", "https://api.product.prieds.com/priedsoa/open-api/v1/public/product/save", [
-            'headers' => [
-                'x-prieds-token' => $token,
-                'x-prieds-username' => 'AIO_INTEGRATION'
-            ],
-            'json' => [
-                'request' => [
-                    "site" => "GUDANG CIREBON",
-                    "product_list" => [
-                        [
-                            "sku" => $sku_number,
-                            "description" => $name,
-                            "msrp" => 0,
-                            "sellable" => 3,
-                            "sku_type" => 1,
-                            "uom" => strtoupper($unit),
-                            "safety_stock" => 10,
-                            "upc" => "",
-                            "attribute_list" => [],
-                            "uom_configuration" => []
-                        ]
-                    ]
-                ]
-            ]
-        ]);
-
-        $body = json_decode($response->getBody()->getContents());
-
-        if ($body->status != 200) {
-            return $body;
-        }
+        //masukan ke tabel good_stocks
+        // $data_good_stocks = [
+        //     "product_id"     => $good_id,
+        //     "date"            => date("Y-m-d"),
+        //     "details"     => "stok awal diinput",
+        //     "debit"            => $stock,
+        //     "credit"            => 0,
+        // ];
+        // $this->goodStocksModel->insert($data_good_stocks);
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', 'Barang : <b>' . $name . '</b> berhasil ditambahkan');
@@ -1393,17 +1379,16 @@ class Product extends Admin
         $hyd_retail = $this->request->getPost('hyd_retail');
         $hyd_grosir = $this->request->getPost('hyd_grosir');
         $hyd_online = $this->request->getPost('hyd_online');
-        $hyd_gc = $this->request->getPost('price_cg');
 
         // Volume Barang atau Produk
         $width = $this->request->getPost('width_product');
         $length = $this->request->getPost('length_product');
         $height = $this->request->getPost('height_product');
-
+        
         $last_price = $this->goodsModel
-            ->where('products.id', $id)
-            ->get()
-            ->getFirstRow();
+        ->where('products.id', $id)
+        ->get()
+        ->getFirstRow();
 
         $this->goodsModel->update($id, ([
             "category_id"      => $category_id,
@@ -1411,7 +1396,6 @@ class Product extends Admin
             "code_id"          => $code_id,
             "name"             => $name,
             "unit"             => $unit,
-            "price_cg"         => $hyd_gc,
             "price"            => $price,
             "price_id"         => $formula,
             // "capacity_id"      => $capacity,
@@ -1419,12 +1403,12 @@ class Product extends Admin
             "trash"            => 0,
             "price_hyd_retail" => $hyd_retail,
             "price_hyd_grosir" => $hyd_grosir,
-            "price_hyd_online" => $hyd_online,
+            "price_hyd_online" => $hyd_online, 
             "last_price"       => $last_price->price,
             "last_update"      => date("Y-m-d"),
             "last_admin"       => $this->session->login_id,
             "details"          => $details,
-            "item_width"       => $width,
+            "item_width"       => $width, 
             "item_length"      => $length,
             "item_height"      => $height,
         ]));
@@ -1432,30 +1416,15 @@ class Product extends Admin
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', 'Barang : <b>' . $name . '</b> berhasil diubah');
 
-        return redirect()->to(base_url('products/' . $id . '/manage'));
+        return redirect()->to(base_url('products/'.$id.'/manage'));
     }
 
-    public function products_delete($id)
-    {
+    public function products_delete($id){
         $this->goodsModel->update($id, ([
             "trash"          => 1,
         ]));
 
         $goods = $this->goodsModel->where("id", $id)->first();
-
-        $token = $this->baseController->getLatestToken();
-
-        $response = $this->clients->request('POST', 'https://api.product.prieds.com/priedsoa/open-api/v1/public/product/delete', [
-            'headers' => [
-                'x-prieds-token' => $token,
-                'x-prieds-username' => 'AIO_INTEGRATION'
-            ],
-            'json' => [
-                'request' => [
-                    'sku' => $goods->sku_number
-                ]
-            ]
-        ]);
 
         $this->session->setFlashdata('message_type', 'success');
         $this->session->setFlashdata('message_content', 'Barang : <b>' . $goods->name . '</b> berhasil dihapus');
@@ -1482,9 +1451,8 @@ class Product extends Admin
         return view("modules/ajax_product_stock", $data);
     }
 
-    public function products_stock()
-    {
-
+    public function products_stock(){
+        
         $product_id = $this->request->getPost('good_id');
         $details = $this->request->getPost('details');
 
@@ -1523,12 +1491,11 @@ class Product extends Admin
             return redirect()->to(base_url('products'));
         }
     }
-
-    public function export_nominal_product()
-    {
+    
+    public function export_nominal_product(){
         $tanggalawal = $this->request->getGet('tanggalawal');
         $tanggalakhir = $this->request->getGet('tanggalakhir');
-
+    
         $products = $this->db->table('products as a');
         $products->select([
             'a.name as product_name',
@@ -1537,9 +1504,9 @@ class Product extends Admin
             'SUM(b.quantity) as qty_stock',
             'SUM(a.price * b.quantity) as total_value',
         ]);
-        $products->join('product_stocks as b', 'a.id = b.product_id', 'left');
+        $products->join('product_stocks as b', 'a.id = b.product_id','left');
         $products->groupBy('a.id');
-        $products->orderBy('a.name', 'asc');
+        $products->orderBy('a.name','asc');
         $products = $products->get();
         $products = $products->getResultObject();
 
@@ -1547,64 +1514,64 @@ class Product extends Admin
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'AIO Store');
         $sheet->mergeCells('A1:D1');
-
-        $sheet->setCellValue('A2', 'Data Produk' . $tanggalawal . " s/d " . $tanggalakhir);
+    
+        $sheet->setCellValue('A2', 'Data Produk'.$tanggalawal." s/d ".$tanggalakhir);
         $sheet->mergeCells('A2:D2');
         $sheet->mergeCells('A3:D3');
-
+    
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1:A2')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
+        ->getStyle('A1:A2')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    
         $spreadsheet->getActiveSheet()
-            ->getStyle('A:D')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
+        ->getStyle('A:D')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    
         $spreadsheet->getActiveSheet()
-            ->getStyle("A1:A2")
-            ->getFont()
-            ->setSize(14);
-
+        ->getStyle("A1:A2")
+        ->getFont()
+        ->setSize(14);
+    
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A4', 'SKU Product');
         $sheet->setCellValue('B4', 'Product Name');
         $sheet->setCellValue('C4', 'Quantity');
         $sheet->setCellValue('D4', 'Price');
         $sheet->setCellValue('E4', 'Amount');
-
+        
         $column = 5;
         $no = 1;
         foreach ($products as $key => $value) {
+            
+            $sheet->setCellValue('A'.$column, $value->prd_sku);
+            $sheet->setCellValue('B'.$column, $value->product_name);
 
-            $sheet->setCellValue('A' . $column, $value->prd_sku);
-            $sheet->setCellValue('B' . $column, $value->product_name);
-
-            if ($value->qty_stock == NULL) {
-                $sheet->setCellValue('C' . $column, '0');
-            } else {
-                $sheet->setCellValue('C' . $column, $value->qty_stock);
+            if($value->qty_stock == NULL){
+                $sheet->setCellValue('C'.$column, '0');
+            }else{
+                $sheet->setCellValue('C'.$column, $value->qty_stock);
             }
 
-            $sheet->setCellValue('D' . $column, 'Rp.' . number_format($value->product_price));
+            $sheet->setCellValue('D'.$column, 'Rp.'.number_format($value->product_price));
 
-            if ($value->qty_stock == 0 || $value->qty_stock < 0) {
-                $sheet->setCellValue('E' . $column, 'Rp.' . number_format($value->product_price));
-            } else {
-                $sheet->setCellValue('E' . $column, 'Rp.' . number_format($value->total_value));
+            if($value->qty_stock == 0 || $value->qty_stock < 0){
+                $sheet->setCellValue('E'.$column, 'Rp.'.number_format($value->product_price));
+            }else{
+                $sheet->setCellValue('E'.$column, 'Rp.'.number_format($value->total_value));
             }
 
             $column++;
         }
-
+    
         $sheet->getStyle("A4:E4")->getFont()->setBold(true);
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
         $sheet->getColumnDimension('E')->setAutoSize(true);
-
+    
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename=Data Produk.xlsx');
@@ -1612,36 +1579,35 @@ class Product extends Admin
         $writer->save('php://output');
         exit();
     }
-
-    public function export_quantitys()
-    {
+    
+    public function export_quantitys(){
         $products = $this->goodsModel
-            ->select([
-                'products.id as product_id',
-                'products.name as product_name',
-                'products.unit as product_unit',
-                'products.sku_number as sku_product',
-            ])
-            ->where('trash', 0)
-            ->orderBy('products.name', 'asc')
-            ->get()->getResultObject();
-
+        ->select([
+            'products.id as product_id',
+            'products.name as product_name',
+            'products.unit as product_unit',
+            'products.sku_number as sku_product',
+        ])
+        ->where('trash', 0)
+        ->orderBy('products.name', 'asc')
+        ->get()->getResultObject(); 
+    
         $spreadsheet = new Spreadsheet();
         $sheet =  $spreadsheet->getActiveSheet();
-
+    
         $sheet->setCellValue('A1', 'Data Stok Produk');
         $sheet->mergeCells('A1:C1');
-
+    
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1:C1')
-            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
+        ->getStyle('A1:C1')
+        ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    
         $sheet->setCellValue('A3', 'SKU Product');
         $sheet->setCellValue('B3', 'Product Name');
         $sheet->setCellValue('C3', 'Quantity');
-
+    
         $column = 4;
-
+    
         $warehouses = [
             'cirebon' => [
                 'ids' => [1, 2, 3, 7, 8],
@@ -1649,15 +1615,15 @@ class Product extends Admin
             ],
             'tasikmalaya' => [
                 'ids' => [5, 10, 9],
-                'sheet_name' => 'TASIKMALAYA',
+                'sheet_name' => 'TASIKMALAYA', 
             ],
         ];
-
+    
         foreach ($warehouses as $location => $warehouse) {
-            $sheet->setCellValue('A' . $column, $warehouse['sheet_name']);
-            $sheet->mergeCells('A' . $column . ':C' . $column);
+            $sheet->setCellValue('A'.$column, $warehouse['sheet_name']);
+            $sheet->mergeCells('A'.$column.':C'.$column);
             $column++;
-
+    
             foreach ($products as $key => $value) {
                 $stocks = $this->db->table('product_stocks');
                 $stocks->selectSum('product_stocks.quantity');
@@ -1665,27 +1631,27 @@ class Product extends Admin
                 $stocks->whereIn('product_stocks.warehouse_id', $warehouse['ids']);
                 $stocks = $stocks->get();
                 $stocks = $stocks->getFirstRow();
-
-                $sheet->setCellValue('A' . $column, $value->sku_product);
-                $sheet->setCellValue('B' . $column, $value->product_name);
-
-                if ($stocks->quantity !== NULL) {
-                    $sheet->setCellValue('C' . $column, $stocks->quantity);
-                } else {
-                    $sheet->setCellValue('C' . $column, 0);
+    
+                $sheet->setCellValue('A'.$column, $value->sku_product);
+                $sheet->setCellValue('B'.$column, $value->product_name);
+    
+                if($stocks->quantity !== NULL){
+                    $sheet->setCellValue('C'.$column, $stocks->quantity);
+                }else{
+                    $sheet->setCellValue('C'.$column, 0);
                 }
-
+    
                 $column++;
             }
         }
-
+    
         $sheet->getStyle('A1:C1')->getFont()->setBold(true);
         $sheet->getStyle('A3:C3')->getFont()->setBold(true);
-
+    
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
-
+    
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename=Data Stok Produk.xlsx');
@@ -1693,83 +1659,82 @@ class Product extends Admin
         $writer->save('php://output');
         exit();
     }
-
-    public function export_product_barang_keluar()
-    {
+    
+    public function export_product_barang_keluar(){
         $productName = $this->request->getGet('productname');
         $tanggalawal = $this->request->getGet('tanggalawal');
         $tanggalakhir = $this->request->getGet('tanggalakhir');
         $sub = $this->request->getGet("sub_kategori");
         $capacity = $this->request->getGet('capacity');
         $getCategory = $this->request->getGet('category_id');
-
-        if ($tanggalawal == null && $tanggalakhir == null) {
-
+        
+        if($tanggalawal == null && $tanggalakhir == null){
+            
             $this->session->setFlashdata('message_type', 'danger');
             $this->session->setFlashdata('message_content', 'Tanggal Awal Dan Tanggal Akhir Tidak Boleh Kosong');
-
+            
             return redirect()->to(base_url("report_produk_keluar"));
         }
-
-        if (!empty($getCategory != "Pilih Kapasitas")) {
+        
+        if(!empty($getCategory != "Pilih Kapasitas")){
             $explode = explode("|", $getCategory);
             $categoryID = $explode[0];
-        } else {
+        }else{
             $categoryID = $getCategory;
         }
-
+        
         $getCodes = $this->codeModel->where("name", $sub)->first();
-
+       
         $saleItem = $this->saleItemModel
-            ->select([
-                'sale_items.id as sales_id',
-                "sale_items.price as sale_price",
-                "sale_items.quantity as sale_quantity",
-                'warehouses.name as warehouse_name',
-                'products.name as product_name',
-                'products.sku_number as sku_number',
-                'sales.transaction_date',
-                'sale_items.quantity',
-                'sales.number',
-                "categories.name category_name",
-                "sub_categories.name as sub_name",
-                "capacity.kapasitas",
-                'contacts.name as contact_name'
-            ])
-            ->join('sales', 'sale_items.sale_id = sales.id', 'left')
-            ->join('contacts', 'sales.contact_id = contacts.id', 'left')
-            ->join('products', 'sale_items.product_id = products.id', 'left')
-            ->join("capacity", "capacity.id = products.capacity_id", "left")
-            ->join("categories", "products.category_id = categories.id", "left")
-            ->join('product_stocks', 'sale_items.id = product_stocks.sale_item_id', 'left')
-            ->join("codes", "codes.id = products.code_id", "left")
-            ->join("sub_categories", "sub_categories.code = codes.name", "left")
-            ->join('warehouses', 'product_stocks.warehouse_id = warehouses.id', 'left');
+        ->select([
+            'sale_items.id as sales_id',
+            "sale_items.price as sale_price",
+            "sale_items.quantity as sale_quantity",
+            'warehouses.name as warehouse_name',
+            'products.name as product_name',
+            'products.sku_number as sku_number',
+            'sales.transaction_date',
+            'sale_items.quantity',
+            'sales.number',
+            "categories.name category_name",
+            "sub_categories.name as sub_name",
+            "capacity.kapasitas",
+            'contacts.name as contact_name'
+        ])
+        ->join('sales', 'sale_items.sale_id = sales.id', 'left')
+        ->join('contacts', 'sales.contact_id = contacts.id', 'left')
+        ->join('products', 'sale_items.product_id = products.id', 'left')
+        ->join("capacity", "capacity.id = products.capacity_id", "left")
+        ->join("categories", "products.category_id = categories.id", "left")
+        ->join('product_stocks','sale_items.id = product_stocks.sale_item_id','left')
+        ->join("codes", "codes.id = products.code_id", "left")
+        ->join("sub_categories","sub_categories.code = codes.name", "left")
+        ->join('warehouses', 'product_stocks.warehouse_id = warehouses.id','left');
 
         if (!empty($productName != "Pilih Barang")) {
             $saleItem->like('products.name', $productName);
         }
-
+        
         if (!empty($getCategory != "Pilih Kategori")) {
             $saleItem->where('products.category_id', $categoryID);
         }
-
+        
         if (!empty($sub != "Pilih Sub Kategori")) {
             $saleItem->where('products.code_id', $getCodes->id);
         }
-
+        
         if (!empty($capacity != "Pilih Kapasitas") && $capacity !== NULL) {
             $saleItem->like('products.name', $capacity);
         }
 
         if (!empty($tanggalawal) && !empty($tanggalakhir)) {
             $saleItem->where('sales.transaction_date >=', $tanggalawal)
-                ->where('sales.transaction_date <=', $tanggalakhir);
+            ->where('sales.transaction_date <=', $tanggalakhir);
         }
 
         $saleItem->orderBy('sales.id', 'desc');
         $result = $saleItem->findAll();
-
+        
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -1778,7 +1743,7 @@ class Product extends Admin
         $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A1')->getFont()->setSize(14);
 
-        $sheet->setCellValue('A2', 'DATA BARANG KELUAR  ' . $tanggalawal . " s/d " . $tanggalakhir);
+        $sheet->setCellValue('A2', 'DATA BARANG KELUAR  '. $tanggalawal . " s/d " . $tanggalakhir);
         $sheet->mergeCells('A2:K2');
         $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A2')->getFont()->setSize(14);
@@ -1797,21 +1762,21 @@ class Product extends Admin
 
         $column = 5;
 
-        foreach ($result as $item) {
+            foreach ($result as $item) {
 
-            $sheet->setCellValue('A' .  $column, $item->sku_number);
-            $sheet->setCellValue('B' . $column, $item->product_name);
-            $sheet->setCellValue('C' . $column, $item->kapasitas ? $item->kapasitas : "-");
-            $sheet->setCellValue('D' . $column, $item->category_name);
-            $sheet->setCellValue('E' . $column, $item->sub_name);
-            $sheet->setCellValue('F' . $column, $item->number);
-            $sheet->setCellValue('G' . $column, $item->contact_name);
-            $sheet->setCellValue('H' . $column, $item->transaction_date);
-            $sheet->setCellValue('I' . $column, $item->warehouse_name);
-            $sheet->setCellValue('J' . $column, $item->quantity);
-            $sheet->setCellValue('K' . $column, $item->sale_price * $item->sale_quantity);
-            $column++;
-        }
+                $sheet->setCellValue('A'.  $column, $item->sku_number);
+                $sheet->setCellValue('B' . $column, $item->product_name);
+                $sheet->setCellValue('C' . $column, $item->kapasitas ? $item->kapasitas : "-");
+                $sheet->setCellValue('D' . $column, $item->category_name);
+                $sheet->setCellValue('E' . $column, $item->sub_name);
+                $sheet->setCellValue('F' . $column, $item->number);
+                $sheet->setCellValue('G' . $column, $item->contact_name);
+                $sheet->setCellValue('H' . $column, $item->transaction_date);
+                $sheet->setCellValue('I' . $column, $item->warehouse_name);
+                $sheet->setCellValue('J' . $column, $item->quantity);
+                $sheet->setCellValue('K' . $column, $item->sale_price * $item->sale_quantity);
+                $column++;
+            }
 
         $sheet->getStyle('A4:K4')->getFont()->setBold(true);
         $sheet->getColumnDimension('A')->setAutoSize(true);
@@ -1835,91 +1800,91 @@ class Product extends Admin
         readfile($filename);
         exit();
     }
-
+    
     private function getExportStockOut($productName, $firstDate, $endDate, $category, $subCategory, $code, $capacity)
-    {
+    {   
         $saleItems = $this->saleItemModel
-            ->select([
-                'sale_items.id as sale_id',
-                'sale_items.price as sale_price',
-                'sale_items.product_id as sale_product_id',
-                'sale_items.quantity as sale_quantity',
-                'sales.transaction_date',
-                'sales.number'
-            ])
-            ->join('sales', 'sale_items.sale_id = sales.id', 'left')
-            ->where('sales.transaction_date >=', $firstDate)
-            ->where('sales.transaction_date <=', $endDate)
-            ->orderBy('sales.id', 'desc')
-            ->findAll();
-
+        ->select([
+            'sale_items.id as sale_id',
+            'sale_items.price as sale_price',
+            'sale_items.product_id as sale_product_id',
+            'sale_items.quantity as sale_quantity',
+            'sales.transaction_date',
+            'sales.number'
+        ])
+        ->join('sales', 'sale_items.sale_id = sales.id', 'left')
+        ->where('sales.transaction_date >=', $firstDate)
+        ->where('sales.transaction_date <=', $endDate)
+        ->orderBy('sales.id', 'desc')
+        ->findAll();
+        
         $productID = array_column($saleItems, "sale_product_id");
-
+        
         $categoryID = "";
         $subCategoryID = "";
-
-        if (!empty($category != "Pilih Kategori")) {
+        
+        if(!empty($category != "Pilih Kategori")) {
             $categoryID = $category;
         }
-
-        if (!empty($subCategory != "Pilih Sub Kategori")) {
+        
+        if(!empty($subCategory != "Pilih Sub Kategori")){
             $subCategoryID = $code;
         }
-
+        
         $categories = $this->goodsCategoryModel
-            ->select(["id", "name"])
-            ->where("category_id", $category)
-            ->findAll();
-
+        ->select(["id", "name"])
+        ->where("category_id", $category)
+        ->findAll();
+        
         $codes = $this->codeModel
-            ->select(["id", "name"])
-            ->where("name", $subCategoryID)
-            ->first();
-
+        ->select(["id", "name"])
+        ->where("name", $subCategoryID)
+        ->first();
+        
         $codesID = "";
-        if ($codes != null) {
+        if($codes != null){
             $codesID  = $codes->name;
         }
-
+        
         $subCategories = $this->subModel
-            ->select(["name", "code"])
-            ->where("code", $codesID)
-            ->findAll();
-
+        ->select(["name", "code"])
+        ->where("code", $codesID)
+        ->findAll();
+        
         $products = $this->goodsModel
-            ->select(["id", "name", "sku_number"])
-            ->whereIn("id", $productID)
-            ->where("category_id", $categoryID)
-            ->where("code_id", $codesID)
-            ->findAll();
+        ->select(["id", "name", "sku_number"])
+        ->whereIn("id", $productID)
+        ->where("category_id", $categoryID)
+        ->where("code_id", $codesID)
+        ->findAll();
     }
-
-
+    
+    
     protected function prepareExport($products, $warehouses, $productStocks, $productSales, $items)
     {
         $data = [];
-        foreach ($products as $product) {
+        foreach($products as $product){
             $rowData = [
                 "sku_number" => $product->sku_number,
                 "product_name" => $product->name,
             ];
-
-            foreach ($warehouses as $warehouse) {
+            
+            foreach($warehouses as $warehouse){
                 $stockQuantity = $this->findStockQuantity($productStocks, $product->id, $warehouse->id);
                 $saleQuantity = $this->findSellsQuantity($productSales, $product->id, $warehouse->id);
                 $deliveredQuantity = $this->findDeliveredsQuantity($items, $product->id, $warehouse->id);
-
-                $rowData["stocks_" . $warehouse->name] = $stockQuantity;
-                $rowData["dipesan_" . $warehouse->name] = $saleQuantity;
-                $rowData["dikirim_" . $warehouse->name] = $deliveredQuantity;
+                
+                $rowData["stocks_".$warehouse->name] = $stockQuantity;
+                $rowData["dipesan_".$warehouse->name] = $saleQuantity;
+                $rowData["dikirim_".$warehouse->name] = $deliveredQuantity;
             }
-
+            
             $data[] = $rowData;
         }
-
+        
         return $data;
     }
-
+    
     protected function findSellsQuantity($data, $productID, $warehouseID)
     {
         foreach ($data as $item) {
@@ -1930,7 +1895,7 @@ class Product extends Admin
 
         return "0";
     }
-
+    
     protected function findDeliveredsQuantity($items, $productID, $warehouseID)
     {
         foreach ($items as $item) {
@@ -1941,7 +1906,7 @@ class Product extends Admin
 
         return "0";
     }
-
+    
     public function export_per_warehouse()
     {
         $warehouse_id = $this->request->getVar('warehouse');
@@ -2103,13 +2068,12 @@ class Product extends Admin
         $writer->save('php://output');
         exit();
     }
-
-
-    public function export_quantity()
-    {
-
+  
+  
+    public function export_quantity(){
+        
         $data = $this->fetchProducts();
-
+        
         $products = $data["products"];
         $warehouses = $data["warehouses"];
         $productStocks = $data["product_stocks"];
@@ -2119,7 +2083,7 @@ class Product extends Admin
         $productSales = $data["product_sales"];
         $productCodes = $data["product_codes"];
         $productService = $data["product_repairs"];
-
+        
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'AIO STORE');
@@ -2152,75 +2116,91 @@ class Product extends Admin
             "",
             "SKU Produk", "Nama Produk", "Kapasitas", "Kategori", "Sub Kategori"
         ]);
-
-        foreach ($warehouses as $warehouse) {
+        
+        foreach($warehouses as $warehouse)
+        {
             array_push($headColumns, $warehouse->name);
         }
-
-        array_push($headColumns, "Servis", "Dipesan");
-
+        
+        array_push($headColumns, "Servis","Dipesan");
+        
         $c = 0;
-        foreach (range("A", "Z") as $columns) {
+        foreach(range("A", "Z") as $columns)
+        {
             $c++;
-            if ($c > count($headColumns) - 1) {
-            } else {
-                $sheet->setCellValue($columns . '4', $headColumns[$c]);
+            if($c > count($headColumns) -1)
+            {
+                
+            }else{
+                $sheet->setCellValue($columns. '4', $headColumns[$c]);
             }
         }
-
+        
         $c = 0;
-        foreach (range("A", "Z") as $columns) {
+        foreach(range("A", "Z") as $columns)
+        {
             $c++;
-            if ($c > count($headColumns) - 1) {
-            } else {
-                $sheet->getStyle($columns . '4')->getFont()->setBold(true);
+            if($c > count($headColumns) -1)
+            {
+                
+            }else{
+                $sheet->getStyle($columns. '4')->getFont()->setBold(true);
             }
         }
-
+        
         $columns = 4;
-        foreach ($products as $product) {
+        foreach($products as $product)
+        {
             $columns++;
-
+            
             $capacity = $this->findCapacity($productCapacity, $product->capacity_id);
             $code = $this->findName($productCodes, $product->code_id);
             $sub = $this->findSubCategory($productSubCategory, $code);
             $category = $this->findCategory($productCategory, $product->category_id);
-
+            
             $dataColumns = ([
-                "",
-                $product->sku_number, $product->name, $capacity, $category, $sub
+               "",
+               $product->sku_number, $product->name, $capacity, $category, $sub
             ]);
-
-            foreach ($warehouses as $warehouse) {
+            
+            foreach($warehouses as $warehouse)
+            {
                 $stockQuantity = $this->findStockQuantity($productStocks, $product->id, $warehouse->id);
                 array_push($dataColumns, $stockQuantity);
             }
-
+            
             $service = $this->findRepairsQuantity($productService, $product->id);
             array_push($dataColumns, $service);
-
+            
             $sales = $this->findSalesQuantity($productSales, $product->id);
             array_push($dataColumns, $sales);
-
+            
             $c = 0;
-            foreach (range("A", "Z") as $columnLetters) {
+            foreach(range("A", "Z") as $columnLetters)
+            {
                 $c++;
-                if ($c > count($dataColumns) - 1) {
-                } else {
-                    $sheet->setCellValue($columnLetters . "" . $columns, $dataColumns[$c]);
+                if($c > count($dataColumns) -1)
+                {
+                    
+                }else{
+                    $sheet->setCellValue($columnLetters."". $columns,$dataColumns[$c]);
                 }
             }
+            
         }
-
+        
         $c = 0;
-        foreach (range("A", "Z") as $columns) {
+        foreach(range("A","Z") as $columns)
+        {
             $c++;
-            if ($c > count($headColumns) - 1) {
-            } else {
+            if($c > count($headColumns) - 1)
+            {
+                
+            }else{
                 $sheet->getColumnDimension($columns)->setAutoSize(true);
             }
         }
-
+        
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename=Data Stok Tersedia.xlsx');
@@ -2228,7 +2208,7 @@ class Product extends Admin
         $writer->save('php://output');
         exit();
     }
-
+    
     public function export_stok_in()
     {
         $buys = $this->request->getGet('buy_id');
@@ -2247,9 +2227,9 @@ class Product extends Admin
                 'products.unit as product_unit',
                 'warehouses.name as warehouse_name',
             ])
-
+            
             ->join('buys', 'buy_items.buy_id = buys.id', 'left')
-            ->join('warehouses', 'buys.warehouse_id = warehouses.id', 'left')
+            ->join('warehouses', 'buys.warehouse_id = warehouses.id','left')
             ->join('products', 'buy_items.product_id = products.id', 'left')
             ->orderBy('buy_items.buy_id', 'desc');
 
@@ -2261,12 +2241,13 @@ class Product extends Admin
             $buyItem->where('buys.date >=', $tanggalawal)
                 ->where('buys.date <=', $tanggalakhir);
         }
-
-        if (!empty($buys != "")) {
-            $buyItem->where('buy_items.buy_id', $buys);
+        
+        if (!empty($buys != "")){
+            $buyItem->where('buy_items.buy_id',$buys);
         }
-
-        if (!empty($productName == "Pilih Brand")) {
+        
+        if (!empty($productName == "Pilih Brand")){
+            
         }
 
         $buys = $buyItem->get()->getResultObject();
@@ -2314,11 +2295,11 @@ class Product extends Admin
             $sheet->setCellValue('C' . $column, $value->buy_number);
             $sheet->setCellValue('D' . $column, $value->warehouse_name);
             $sheet->setCellValue('E' . $column, $value->product_name);
-
+            
             $sheet->setCellValue('F' . $column, $value->buy_qty . ' ' . $value->product_unit);
             $column++;
         }
-
+        
         $sheet->getStyle('A4:F4')->getFont()->setBold(true);
         // $sheet->getStyle("A4:E4")
         $sheet->getColumnDimension('A')->setWidth('8');
@@ -2336,58 +2317,56 @@ class Product extends Admin
         exit();
     }
 
-    public function export_stok_out()
-    {
-
+    public function export_stok_out(){
+        
         $tanggalawal = $this->request->getGet('tanggalawal');
         $tanggalakhir = $this->request->getGet('tanggalakhir');
 
         $sale = $this->saleItemModel
-            ->select([
-                'sale_items.id',
-                'sales.admin_id',
-                'sales.contact_id',
-                'sale_items.sale_id',
-                'sales.number as number',
-                'sale_items.quantity as qty',
-                'products.name as product_name',
-                'products.unit as product_unit',
-                'sales.transaction_date as date',
-                'products.sku_number as sku_number',
-                'product_stocks.warehouse_id',
-            ])
+        ->select([
+            'sale_items.id',
+            'sales.admin_id',
+            'sales.contact_id',
+            'sale_items.sale_id',
+            'sales.number as number',
+            'sale_items.quantity as qty',
+            'products.name as product_name',
+            'products.unit as product_unit',
+            'sales.transaction_date as date',
+            'products.sku_number as sku_number',
+            'product_stocks.warehouse_id',])
 
-            ->join('product_stocks', 'sale_items.id = product_stocks.sale_item_id')
-            ->join('products', 'sale_items.product_id = products.id', 'left')
-            ->join('sales', 'sale_items.sale_id = sales.id', 'left')
-            ->where('sales.transaction_date >=', $tanggalawal)
-            ->where('sales.transaction_date <=', $tanggalakhir)
-            ->orderBy('sales.id', 'desc')
-            ->findAll();
-
+        ->join('product_stocks','sale_items.id = product_stocks.sale_item_id')
+        ->join('products','sale_items.product_id = products.id','left')
+        ->join('sales','sale_items.sale_id = sales.id','left')
+        ->where('sales.transaction_date >=', $tanggalawal)
+        ->where('sales.transaction_date <=', $tanggalakhir)
+        ->orderBy('sales.id','desc')
+        ->findAll();
+        
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'AIO Store');
         $sheet->mergeCells('A1:G1');
 
-        $sheet->setCellValue('A2', 'Stock Out ' . $tanggalawal . " s/d " . $tanggalakhir);
+        $sheet->setCellValue('A2', 'Stock Out '.$tanggalawal." s/d ".$tanggalakhir);
         $sheet->mergeCells('A2:G2');
         $sheet->mergeCells('A3:G3');
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1:A2')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A1:A2')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A:G')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A:G')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()
-            ->getStyle("A1:A2")
-            ->getFont()
-            ->setSize(14);
+        ->getStyle("A1:A2")
+        ->getFont()
+        ->setSize(14);
 
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue("A4", 'SKU NUmber');
@@ -2398,47 +2377,47 @@ class Product extends Admin
         $sheet->setCellValue("E4", 'Date Stock Out');
         $sheet->setCellValue('F4', "Location");
         $sheet->setCellValue("G4", 'Quantity');
-
+      
 
         $column = 5;
         $no = 1;
-        foreach ($sale as $key => $value) {
+        foreach ($sale as $key => $value) { 
 
-            $sheet->setCellValue('A' . $column, $value->sku_number);
-            $sheet->setCellValue('B' . $column, $value->product_name);
-            $sheet->setCellValue('C' . $column, $value->number);
+        $sheet->setCellValue('A'.$column, $value->sku_number);
+        $sheet->setCellValue('B'.$column, $value->product_name);
+        $sheet->setCellValue('C'.$column, $value->number);
 
-            //Query Administrator
-            $admin = $this->db->table('administrators');
-            $admin->where('administrators.id', $value->admin_id);
-            $admin = $admin->get();
-            $admin = $admin->getFirstRow();
-            $sheet->setCellValue('D' . $column, $admin->name);
+        //Query Administrator
+        $admin = $this->db->table('administrators');
+        $admin->where('administrators.id',$value->admin_id);
+        $admin = $admin->get();
+        $admin = $admin->getFirstRow();
+        $sheet->setCellValue('D'.$column, $admin->name);
 
 
-            // //Query Customer
-            // $customer = $this->db->table('contacts');
-            // $customer->where('contacts.id',$value->contact_id);
-            // $customer->where("trash", 0);
-            // $customer = $customer->get();
-            // $customer = $customer->getResultObject();
+        // //Query Customer
+        // $customer = $this->db->table('contacts');
+        // $customer->where('contacts.id',$value->contact_id);
+        // $customer->where("trash", 0);
+        // $customer = $customer->get();
+        // $customer = $customer->getResultObject();
+        
+        // $sheet->setCellValue('F'.$column, $customer->name);
 
-            // $sheet->setCellValue('F'.$column, $customer->name);
+        $sheet->setCellValue('E'.$column, $value->date);
+        $gudang = $this->db->table('warehouses');
+        $gudang->where('warehouses.id', $value->warehouse_id);
+        $gudang = $gudang->get();
+        $gudang = $gudang->getFirstRow();
 
-            $sheet->setCellValue('E' . $column, $value->date);
-            $gudang = $this->db->table('warehouses');
-            $gudang->where('warehouses.id', $value->warehouse_id);
-            $gudang = $gudang->get();
-            $gudang = $gudang->getFirstRow();
-
-            $sheet->setCellValue('F' . $column, $gudang->name);
-            $sheet->setCellValue('G' . $column, $value->qty . ' ' . $value->product_unit);
-
-            $column++;
-        }
+        $sheet->setCellValue('F'.$column, $gudang->name);
+        $sheet->setCellValue('G'.$column, $value->qty.' '.$value->product_unit);
+       
+        $column++; 
+    }
 
         $sheet->getStyle("A4:G4")->getFont()->setBold(true);
-
+        
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSIze(true);
@@ -2455,63 +2434,63 @@ class Product extends Admin
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit();
+
     }
 
-    public function n()
-    {
+    public function n(){
         $productName = $this->request->getGet('productName');
         $tanggalawal = $this->request->getGet('tanggalawal');
         $tanggalakhir = $this->request->getGet('tanggalakhir');
 
         $buyItem = $this->buyItemModel
-            ->select([
-                'buys.date',
-                'buy_items.id',
-                'buys.number as buy_number',
-                'buy_items.quantity as buy_qty',
-                'products.name as product_name',
-                'products.unit as product_unit',
-                'warehouses.name as warehouse_name',
-            ])
-            ->join('buys', 'buy_items.buy_id = buys.id', 'left')
-            ->join('products', 'buy_items.product_id = products.id', 'left')
-            ->join('warehouses', 'buys.warehouse_id = warehouses.id', 'left')
-            ->orderBy('buys.id', 'desc');
-
+        ->select([
+            'buys.date',
+            'buy_items.id',
+            'buys.number as buy_number',
+            'buy_items.quantity as buy_qty',
+            'products.name as product_name',
+            'products.unit as product_unit',
+            'warehouses.name as warehouse_name',
+        ])
+        ->join('buys','buy_items.buy_id = buys.id','left')
+        ->join('products', 'buy_items.product_id = products.id','left')
+        ->join('warehouses', 'buys.warehouse_id = warehouses.id', 'left')
+        ->orderBy('buys.id','desc');
+        
         if (!empty($productName != "Pilih Brand")) {
             $buyItem->like('products.name', $productName);
         }
 
         if (!empty($tanggalawal) && !empty($tanggalakhir)) {
             $buyItem->where('buys.date >=', $tanggalawal)
-                ->where('buys.date <=', $tanggalakhir);
+            ->where('buys.date <=', $tanggalakhir);
         }
-
+        
         $buys = $buyItem->get()->getResultObject();
-
+        
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue('A1', 'AIO Store');
         $sheet->mergeCells('A1:F1');
 
-        $sheet->setCellValue('A2', 'Stock in ' . $tanggalawal . " s/d " . $tanggalakhir);
+        $sheet->setCellValue('A2', 'Stock in '.$tanggalawal." s/d ".$tanggalakhir);
         $sheet->mergeCells('A2:F2');
         $sheet->mergeCells('A3:F3');
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1:A2')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A1:A2')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A:F')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A:F')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()
-            ->getStyle("A1:A2")
-            ->getFont()
-            ->setSize(14);
+        ->getStyle("A1:A2")
+        ->getFont()
+        ->setSize(14);
 
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setCellValue("A4", 'No');
@@ -2523,18 +2502,18 @@ class Product extends Admin
 
         $column = 5;
         $no = 1;
-        foreach ($buys as $key => $value) {
+        foreach ($buys as $key => $value) { 
 
-            // $contactname = $this->contactModel->where('contacts.id',$value->contact_id)->orderBy('contacts.name','asc')->findAll();
+        // $contactname = $this->contactModel->where('contacts.id',$value->contact_id)->orderBy('contacts.name','asc')->findAll();
 
-            $sheet->setCellValue('A' . $column, $no++);
-            $sheet->setCellValue('B' . $column, $value->date);
-            $sheet->setCellValue('C' . $column, $value->buy_number);
-            $sheet->setCellValue('D' . $column, $value->product_name);
-            $sheet->setCellValue('E' . $column, $value->warehouse_name);
-            $sheet->setCellValue('F' . $column, $value->buy_qty . ' ' . $value->product_unit);
-            $column++;
-        }
+        $sheet->setCellValue('A'.$column, $no++);
+        $sheet->setCellValue('B'.$column, $value->date);
+        $sheet->setCellValue('C'.$column, $value->buy_number);
+        $sheet->setCellValue('D'.$column, $value->product_name);
+        $sheet->setCellValue('E'.$column, $value->warehouse_name);
+        $sheet->setCellValue('F'.$column, $value->buy_qty.' '.$value->product_unit);
+        $column++; 
+    }
 
         $sheet->getStyle("A4:E4")->getFont()->setBold(true);
         $sheet->getColumnDimension('A')->setWidth('8');
@@ -2551,33 +2530,32 @@ class Product extends Admin
         exit();
     }
 
-
-    public function exportData()
-    {
+  
+    public function exportData(){
         $tanggalawal = $this->request->getGet('tanggalawal');
         $tanggalakhir = $this->request->getGet('tanggalakhir');
 
         $products = $this->productStockModel
-            ->select([
-                'products.name as product_name',
-                'buys.date as buy_date',
-                'buy_items.quantity as buy_quantity',
-                'sale_items.quantity as sale_quantity',
-                'COALESCE(sales.number, buys.number) as document_number',
-                'COALESCE(buys.date, sales.transaction_date) as document_date',
-            ])
-            ->where('product_stocks.date >=', $tanggalawal)
-            ->where('product_stocks.date <=', $tanggalakhir)
-            ->join('products', 'product_stocks.product_id = products.id', 'left')
-            ->join('buy_items', 'product_stocks.buy_item_id = buy_items.id', 'left')
-            ->join('buys', 'buy_items.buy_id = buys.id', 'left')
-            ->join('sale_items', 'product_stocks.sale_item_id = sale_items.id', 'left')
-            ->join('sales', 'sale_items.sale_id = sales.id', 'left')
-            ->join('warehouses', 'product_stocks.warehouse_id = warehouses.id', 'left')
-            ->orderBy('products.name', 'asc')
-            ->orderBy('document_date', 'desc')
-            ->get()
-            ->getResultObject();
+        ->select([
+            'products.name as product_name',
+            'buys.date as buy_date',
+            'buy_items.quantity as buy_quantity',
+            'sale_items.quantity as sale_quantity',
+            'COALESCE(sales.number, buys.number) as document_number',
+            'COALESCE(buys.date, sales.transaction_date) as document_date',
+        ])
+        ->where('product_stocks.date >=', $tanggalawal)
+        ->where('product_stocks.date <=', $tanggalakhir)
+        ->join('products', 'product_stocks.product_id = products.id', 'left')
+        ->join('buy_items', 'product_stocks.buy_item_id = buy_items.id', 'left')
+        ->join('buys','buy_items.buy_id = buys.id', 'left')
+        ->join('sale_items', 'product_stocks.sale_item_id = sale_items.id', 'left')
+        ->join('sales','sale_items.sale_id = sales.id', 'left')
+        ->join('warehouses', 'product_stocks.warehouse_id = warehouses.id', 'left')
+        ->orderBy('products.name', 'asc')
+        ->orderBy('document_date', 'desc')
+        ->get()
+        ->getResultObject();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -2589,16 +2567,16 @@ class Product extends Admin
         $sheet->mergeCells('A3:E3');
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1:A2')
-            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A1:A2')
+        ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A:G')
-            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A:G')
+        ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1:A2')
-            ->getFont()->setSize(14);
+        ->getStyle('A1:A2')
+        ->getFont()->setSize(14);
 
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -2614,28 +2592,28 @@ class Product extends Admin
         $prevProduct = null;
 
         foreach ($products as $key => $value) {
-            if ($prevProduct !== $value->product_name) {
-                $sheet->setCellValue('A' . $rowIndex, $value->product_name);
-                $sheet->mergeCells('A' . $rowIndex . ':A' . ($rowIndex + 1));
-                $sheet->getStyle('A' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle('A' . $rowIndex)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-            }
-
-            $sheet->setCellValue('B' . $rowIndex, $value->document_date);
-
-            if ($value->buy_quantity !== null) {
-                $sheet->setCellValue('C' . $rowIndex, 'Pembelian');
-                $sheet->setCellValue('D' . $rowIndex, $value->document_number);
-                $sheet->setCellValue('E' . $rowIndex, '+' . $value->buy_quantity);
-            } else {
-                $sheet->setCellValue('C' . $rowIndex, 'Penjualan');
-                $sheet->setCellValue('D' . $rowIndex, $value->document_number);
-                $sheet->setCellValue('E' . $rowIndex, '-' . $value->sale_quantity);
-            }
-
-            $prevProduct = $value->product_name;
-            $rowIndex++;
+        if ($prevProduct !== $value->product_name) {
+            $sheet->setCellValue('A' . $rowIndex, $value->product_name);
+            $sheet->mergeCells('A' . $rowIndex . ':A' . ($rowIndex + 1));
+            $sheet->getStyle('A' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A' . $rowIndex)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
         }
+
+        $sheet->setCellValue('B' . $rowIndex, $value->document_date);
+
+        if ($value->buy_quantity !== null) {
+            $sheet->setCellValue('C' . $rowIndex, 'Pembelian');
+            $sheet->setCellValue('D' . $rowIndex, $value->document_number);
+            $sheet->setCellValue('E' . $rowIndex, '+' . $value->buy_quantity);
+        } else {
+            $sheet->setCellValue('C' . $rowIndex, 'Penjualan');
+            $sheet->setCellValue('D' . $rowIndex, $value->document_number);
+            $sheet->setCellValue('E' . $rowIndex, '-' . $value->sale_quantity);
+        }
+
+        $prevProduct = $value->product_name;
+        $rowIndex++;
+    }
 
         $sheet->getColumnDimension('A')->setAutoSize(true);
         $sheet->getColumnDimension('B')->setAutoSize(true);
@@ -2649,10 +2627,9 @@ class Product extends Admin
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
         exit();
-    }
-
-    public function detail_export_products()
-    {
+    } 
+    
+    public function detail_export_products(){
         $dataproducts = $this->db->table('products as a');
         $dataproducts->select([
             'a.id',
@@ -2672,8 +2649,8 @@ class Product extends Admin
             'c.plus_nine',
             'c.plus_ten',
         ]);
-        $dataproducts->join('categories as b', 'a.category_id = b.id', 'left');
-        $dataproducts->join('product_prices as c', 'a.price_id = c.id', 'left');
+        $dataproducts->join('categories as b','a.category_id = b.id','left');
+        $dataproducts->join('product_prices as c','a.price_id = c.id','left');
         $dataproducts->orderBy('a.name', 'asc');
         $dataproducts->where('a.trash', 0);
         $dataproducts = $dataproducts->get();
@@ -2684,37 +2661,36 @@ class Product extends Admin
             'dataproducts'  => $dataproducts,
         ]);
 
-        return view('modules/detail_export_data', $data);
+        return view('modules/detail_export_data', $data);        
     }
-
-    public function export()
-    {
-        $products = $this->goodsModel
-            ->select([
-                "categories.name as category_name",
-                "products.id",
-                "products.sku_number",
-                "products.name",
-                "products.unit",
-                "products.price",
-                "products.price_id",
-                "price_hyd_retail",
-                "price_hyd_grosir",
-            ])
-            ->join('categories', 'products.category_id = categories.id', 'left')
-            ->orderBy("products.name", "asc")
-            ->where("products.trash", 0)
-            ->findAll();
-
+  
+    public function export(){
+    	$products = $this->goodsModel
+    	->select([
+    	   "categories.name as category_name",
+    	   "products.id",
+    	   "products.sku_number",
+    	   "products.name",
+    	   "products.unit",
+    	   "products.price",
+    	   "products.price_id",
+    	   "price_hyd_retail",
+    	   "price_hyd_grosir",
+    	])
+    	->join('categories','products.category_id = categories.id','left')
+    	->orderBy("products.name","asc")
+    	->where("products.trash",0)
+    	->findAll();
+    	
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->setCellValue('A1', 'Data Produk');
+    
+    	$sheet->setCellValue('A1', 'Data Produk');
         $sheet->mergeCells('A1:P1');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A1')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);  
 
         $spreadsheet->getActiveSheet()
             ->getStyle('A1')
@@ -2723,46 +2699,37 @@ class Product extends Admin
 
         $headColumns = ([
             "",
-            "Nama Produk", "SKU Produk", "Kategori"
+            "Nama Produk","SKU Produk","Kategori"
         ]);
 
         //$warehouses = $this->warehouseModel->where("trash", 0)->orderBy("name", "asc")->findAll();
 
-        // foreach($warehouses as $warehouse){
+       // foreach($warehouses as $warehouse){
         //    array_push($headColumns,$warehouse->name);
-        // } 
+       // } 
 
-        array_push(
-            $headColumns,
-            "Harga Utama",
-            "Harga Ke-2",
-            "Harga Ke-3",
-            "Harga Ke-4",
-            "Harga Ke-5",
-            "Harga Ke-6",
-            "Harga Ke-7",
-            "Harga Ke-8",
-            "Harga Ke-9",
-            "Harga Ke-10"
-        );
+        array_push($headColumns,"Harga Utama","Harga Ke-2","Harga Ke-3","Harga Ke-4"
+        ,"Harga Ke-5","Harga Ke-6","Harga Ke-7","Harga Ke-8","Harga Ke-9","Harga Ke-10");
 
         $countHeadColumns = count($headColumns);
 
         $c = 0;
-        foreach (range('A', 'Z') as $column) {
+        foreach (range('A', 'Z') as $column){
             $c++;
-            if ($c > count($headColumns) - 1) {
-            } else {
-                $sheet->setCellValue($column . '2', $headColumns[$c]);
+            if($c > count($headColumns) - 1){
+
+            }else{
+                $sheet->setCellValue($column.'2', $headColumns[$c]);
             }
         }
 
         $c = 0;
-        foreach (range('A', 'Z') as $column) {
+        foreach (range('A', 'Z') as $column){
             $c++;
-            if ($c > count($headColumns) - 1) {
-            } else {
-                $sheet->getStyle($column . '2')->getFont()->setBold(true);
+            if($c > count($headColumns) - 1){
+
+            }else{
+                $sheet->getStyle($column.'2')->getFont()->setBold(true);
             }
         }
 
@@ -2771,7 +2738,7 @@ class Product extends Admin
         // $sheet->setCellValue('C1', 'Nomer SKU');
         // $sheet->setCellValue('D1', 'Satuan');
         // $sheet->setCellValue('E1', 'Harga Utama');
-        // $sheet->setCellValue('F1', 'Harga Ke-2');
+    	// $sheet->setCellValue('F1', 'Harga Ke-2');
         // $sheet->setCellValue('G1', 'Harga Ke-3');
         // $sheet->setCellValue('H1', 'Harga Ke-4');
         // $sheet->setCellValue('I1', 'Harga Ke-5');
@@ -2780,8 +2747,8 @@ class Product extends Admin
         // $sheet->setCellValue('L1', 'Harga Ke-8');
         // $sheet->setCellValue('M1', 'Harga Ke-9');
         // $sheet->setCellValue('N1', 'Harga Ke-10');
-
-        // $sheet->getStyle('A1')->getFont()->setBold(true);
+    
+    	// $sheet->getStyle('A1')->getFont()->setBold(true);
         // $sheet->getStyle('B1')->getFont()->setBold(true);
         // $sheet->getStyle('C1')->getFont()->setBold(true);
         // $sheet->getStyle('D1')->getFont()->setBold(true);
@@ -2795,14 +2762,14 @@ class Product extends Admin
         // $sheet->getStyle('L1')->getFont()->setBold(true);
         // $sheet->getStyle('M1')->getFont()->setBold(true);
         // $sheet->getStyle('N1')->getFont()->setBold(true);
-
+    
         $column = 2;
-        foreach ($products as $product) {
+        foreach($products as $product) {
             $column++;
-
-            $rumus = $this->productPriceModel->where("id", $product->price_id)->first();
-
-            if ($rumus == NULL) {
+            
+          	$rumus = $this->productPriceModel->where("id",$product->price_id)->first();
+          
+          	if($rumus == NULL){
                 $margins = ([
                     0, // 0
                     0, // margin ke-1
@@ -2816,7 +2783,7 @@ class Product extends Admin
                     0, // margin ke-9
                     0, // margin ke-10
                 ]);
-            } else {
+            }else{
                 $margins = ([
                     0, // 0
                     $rumus->plus_one, // margin ke-1
@@ -2835,52 +2802,52 @@ class Product extends Admin
             $arrayPrices = ([0]);
 
             $thisPrice = floatval($product->price);
-            array_push($arrayPrices, $thisPrice);
-            for ($p = 2; $p <= 10; $p++) {
+            array_push($arrayPrices,$thisPrice);
+            for($p = 2; $p <= 10; $p++){
                 $thisPrice += $margins[$p];
                 array_push($arrayPrices, $thisPrice);
             }
 
             $dataColumns = ([
                 "",
-                $product->name, $product->sku_number, $product->category_name,
+                $product->name,$product->sku_number,$product->category_name,
             ]);
 
-            //  foreach($warehouses as $warehouse){
-            //       $location = $this->db->table("product_stocks");
-            //       $location->selectSum("quantity");
-            //        $location->where("warehouse_id",$warehouse->id);
-            //        $location->where("product_id",$product->id);
-            //        $location = $location->get();
-            //        $location = $location->getFirstRow();
+         //  foreach($warehouses as $warehouse){
+         //       $location = $this->db->table("product_stocks");
+         //       $location->selectSum("quantity");
+        //        $location->where("warehouse_id",$warehouse->id);
+        //        $location->where("product_id",$product->id);
+        //        $location = $location->get();
+        //        $location = $location->getFirstRow();
+                
+         //       if($location->quantity == NULL){
+         //           array_push($dataColumns,"0 ".$product->unit);
+          //      }else{
+          //          array_push($dataColumns,$location->quantity." ".$product->unit);
+          //      }
+          //  }
 
-            //       if($location->quantity == NULL){
-            //           array_push($dataColumns,"0 ".$product->unit);
-            //      }else{
-            //          array_push($dataColumns,$location->quantity." ".$product->unit);
-            //      }
-            //  }
-
-            array_push(
-                $dataColumns,
-                $product->price,
-                $arrayPrices[2],
-                $arrayPrices[3],
-                $arrayPrices[4],
-                $arrayPrices[5],
-                $arrayPrices[6],
-                $arrayPrices[7],
-                $arrayPrices[8],
-                $arrayPrices[9],
-                $arrayPrices[10]
+            array_push($dataColumns,
+            $product->price,
+            $arrayPrices[2],
+            $arrayPrices[3],
+            $arrayPrices[4],
+            $arrayPrices[5],
+            $arrayPrices[6],
+            $arrayPrices[7],
+            $arrayPrices[8],
+            $arrayPrices[9],
+            $arrayPrices[10]
             );
 
             $c = 0;
-            foreach (range('A', 'Z') as $columnLetter) {
+            foreach (range('A', 'Z') as $columnLetter){
                 $c++;
-                if ($c > count($dataColumns) - 1) {
-                } else {
-                    $sheet->setCellValue($columnLetter . '' . $column, $dataColumns[$c]);
+                if($c > count($dataColumns) - 1){
+
+                }else{
+                    $sheet->setCellValue($columnLetter.''.$column, $dataColumns[$c]);
                 }
             }
 
@@ -2901,10 +2868,11 @@ class Product extends Admin
         }
 
         $c = 0;
-        foreach (range('A', 'Z') as $column) {
+        foreach (range('A', 'Z') as $column){
             $c++;
-            if ($c > count($headColumns) - 1) {
-            } else {
+            if($c > count($headColumns) - 1){
+
+            }else{
                 $sheet->getColumnDimension($column)->setAutoSize(true);
             }
         }
@@ -2914,7 +2882,7 @@ class Product extends Admin
         // $sheet->getColumnDimension('C')->setAutoSize(true);
         // $sheet->getColumnDimension('D')->setAutoSize(true);
         // $sheet->getColumnDimension('E')->setAutoSize(true);
-        // $sheet->getColumnDimension('F')->setAutoSize(true);
+    	// $sheet->getColumnDimension('F')->setAutoSize(true);
         // $sheet->getColumnDimension('G')->setAutoSize(true);
         // $sheet->getColumnDimension('H')->setAutoSize(true);
         // $sheet->getColumnDimension('I')->setAutoSize(true);
@@ -2931,32 +2899,32 @@ class Product extends Admin
         $writer->save('php://output');
         exit();
     }
-
-    public function export_dataproduct()
+  
+  	public function export_dataproduct()
     {
-        $productname = $this->request->getGet('productname');
+     	$productname = $this->request->getGet('productname');
 
         $products = $this->goodsModel
-            ->orderBy("name", "asc")
-            ->like("name", $productname)
-            ->where("trash", 0)
-            ->findAll();
+        ->orderBy("name","asc")
+        ->like("name", $productname)
+        ->where("trash",0)
+        ->findAll();
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-
-        $sheet->setCellValue('A1', 'Data Produk ' . $productname);
+    
+        $sheet->setCellValue('A1', 'Data Produk '.$productname);
         $sheet->mergeCells('A1:M1');
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1')
-            ->getAlignment()
-            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        ->getStyle('A1')
+        ->getAlignment()
+        ->setHorizontal(Alignment::HORIZONTAL_CENTER);  
 
         $spreadsheet->getActiveSheet()
-            ->getStyle('A1')
-            ->getFont()
-            ->setSize(14);
-
+        ->getStyle('A1')
+        ->getFont()
+        ->setSize(14);
+ 
         $sheet->setCellValue('A2', 'Nama Produk');
         $sheet->setCellValue('B2', 'Nomer SKU');
         $sheet->setCellValue('C2', 'Satuan Produk');
@@ -2970,7 +2938,7 @@ class Product extends Admin
         $sheet->setCellValue('K2', 'Harga Ke-8');
         $sheet->setCellValue('L2', 'Harga Ke-9');
         $sheet->setCellValue('M2', 'Harga Ke-10');
-
+    
         $sheet->getStyle('A2')->getFont()->setBold(true);
         $sheet->getStyle('B2')->getFont()->setBold(true);
         $sheet->getStyle('C2')->getFont()->setBold(true);
@@ -2984,14 +2952,14 @@ class Product extends Admin
         $sheet->getStyle('K2')->getFont()->setBold(true);
         $sheet->getStyle('L2')->getFont()->setBold(true);
         $sheet->getStyle('M2')->getFont()->setBold(true);
-
+    
         $column = 2;
-        foreach ($products as $product) {
+        foreach($products as $product) {
             $column++;
-
-            $rumus = $this->productPriceModel->where("id", $product->price_id)->first();
-
-            if ($rumus == NULL) {
+            
+            $rumus = $this->productPriceModel->where("id",$product->price_id)->first();
+          
+            if($rumus == NULL){
                 $margins = ([
                     0, // 0
                     0, // margin ke-1
@@ -3005,7 +2973,7 @@ class Product extends Admin
                     0, // margin ke-9
                     0, // margin ke-10
                 ]);
-            } else {
+            }else{
                 $margins = ([
                     0, // 0
                     $rumus->plus_one, // margin ke-1
@@ -3024,26 +2992,26 @@ class Product extends Admin
             $arrayPrices = ([0]);
 
             $thisPrice = floatval($product->price);
-            array_push($arrayPrices, $thisPrice);
-
-            for ($p = 2; $p <= 10; $p++) {
+            array_push($arrayPrices,$thisPrice);
+            
+            for($p = 2; $p <= 10; $p++){
                 $thisPrice += $margins[$p];
                 array_push($arrayPrices, $thisPrice);
-            }
+            } 
 
-            $sheet->setCellValue('A' . $column, $product->name);
-            $sheet->setCellValue('B' . $column, $product->sku_number);
-            $sheet->setCellValue('C' . $column, $product->unit);
-            $sheet->setCellValue('D' . $column, $product->price);
-            $sheet->setCellValue('E' . $column, $arrayPrices[2]);
-            $sheet->setCellValue('F' . $column, $arrayPrices[3]);
-            $sheet->setCellValue('G' . $column, $arrayPrices[4]);
-            $sheet->setCellValue('H' . $column, $arrayPrices[5]);
-            $sheet->setCellValue('I' . $column, $arrayPrices[6]);
-            $sheet->setCellValue('J' . $column, $arrayPrices[7]);
-            $sheet->setCellValue('K' . $column, $arrayPrices[8]);
-            $sheet->setCellValue('L' . $column, $arrayPrices[9]);
-            $sheet->setCellValue('M' . $column, $arrayPrices[10]);
+            $sheet->setCellValue('A'.$column, $product->name);
+            $sheet->setCellValue('B'.$column, $product->sku_number);
+            $sheet->setCellValue('C'.$column, $product->unit);
+            $sheet->setCellValue('D'.$column, $product->price);
+            $sheet->setCellValue('E'.$column, $arrayPrices[2]);
+            $sheet->setCellValue('F'.$column, $arrayPrices[3]);
+            $sheet->setCellValue('G'.$column, $arrayPrices[4]);
+            $sheet->setCellValue('H'.$column, $arrayPrices[5]);
+            $sheet->setCellValue('I'.$column, $arrayPrices[6]);
+            $sheet->setCellValue('J'.$column, $arrayPrices[7]);
+            $sheet->setCellValue('K'.$column, $arrayPrices[8]);
+            $sheet->setCellValue('L'.$column, $arrayPrices[9]);
+            $sheet->setCellValue('M'.$column, $arrayPrices[10]);
         }
 
         $sheet->getColumnDimension('A')->setAutoSize(true);
@@ -3062,9 +3030,10 @@ class Product extends Admin
 
         $writer = new Xlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename=Data Barang produk ' . $productname . '.xlsx');
+        header('Content-Disposition: attachment; filename=Data Barang produk '.$productname.'.xlsx');
         header('Cache-Control: max-age=0');
         $writer->save('php://output');
-        exit();
+        exit(); 
     }
+  
 }

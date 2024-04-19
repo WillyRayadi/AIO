@@ -13,10 +13,19 @@ $routes->get("owner/products/locations","Owner::products_locations");
 
 $routes->get("owner/sales","Owner::sales");
 $routes->get("owner/sales/(:num)/manage","Owner::sales_manage/$1");
+$routes->get("owner/sales/test/(:num)/manage","Owner::sales_test/$1");
 
 $routes->get("owner/sales/need_approval","Owner::sales_need_approval");
 $routes->get("owner/sales/(:num)/item/(:num)/approve","Owner::sales_item_approve/$1/$2");
 $routes->get("owner/sales/(:num)/item/(:num)/unapprove","Owner::sales_item_unapprove/$1/$2");
+
+$routes->get("owner/sales/return", "Owner::sales_return");
+$routes->get('owner/sales/return/manage/(:num)', 'Owner::sales_return_manage/$1');
+$routes->post('owner/sales/return/add', 'Owner::sales_return_add');
+$routes->post('owner/sales/return/add/items', 'Owner::sales_return_add_items');
+$routes->get('owner/sales/sale/retur/delete/(:num)', 'Owner::sales_return_delete/$1');
+$routes->get('owner/sales/sale/retur/delete/(:num)/items/(:num)', 'Owner::sales_return_delete_items/$1/$2');
+$routes->get('owner/sales/sale/retur/print/(:num)', 'Owner::sales_retur_print/$1/$2');
 
 $routes->get("owner/target","Owner::target");
 $routes->post("owner/target/save","Owner::target_save");

@@ -70,6 +70,23 @@
         </p>
     </a>
 </li>
+<?php 
+    $this->db = \Config\Database::connect();
+    $session = \Config\Services::session(); 
+    $admins = $this->db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
+    $roles =  $this->db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
+
+    if ($roles->id == 4) : ?>
+        <li class="nav-item">
+            <a href="<?= base_url('custom/insentif/supervisor') ?>" class="nav-link">
+                <i class="nav-icon fas fa-dollar-sign"></i>
+                    <p>
+                        Custom Insentif
+                    </p>
+            </a>
+        </li>
+<?php endif ?>
+
 <li class="nav-item">
     <a href="javascript:void(0)" class="nav-link">
         <i class="nav-icon fas fa-file"></i>

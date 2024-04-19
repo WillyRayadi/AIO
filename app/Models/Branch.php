@@ -15,9 +15,8 @@ class Branch extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'name_city',
+        'city_name',
         'trash',
-        // 'date_insert'
     ];
 
     // Dates

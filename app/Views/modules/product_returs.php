@@ -1,7 +1,7 @@
 <?= $this->extend("general/template") ?>
 
 <?= $this->section("page_title") ?>
-Barang Return
+Barang Returns
 <?= $this->endSection() ?>
 
 <?= $this->section("page_breadcrumb") ?>

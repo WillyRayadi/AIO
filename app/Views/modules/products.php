@@ -14,7 +14,7 @@ Pengelolaan Barang
 
 <!-- Modal Add -->
 <form method="post" action="<?= base_url("products/add") ?>">
-    <div class="modal fade" id="modalAdd" data-backdrop="static" data-keyboard="false" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAdd" data-backdrop="static" data-keyboard="false"  aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header bg-blue">
@@ -76,7 +76,7 @@ Pengelolaan Barang
                                     <option value="0">-</option>
                                     <?php
                                     foreach ($capacity as $kps) {
-                                        echo "
+                                    echo "
                                         <option value='" . $kps->id . "'>" . $kps->kapasitas . "</option>
                                         ";
                                     }
@@ -165,15 +165,15 @@ Pengelolaan Barang
 
             <?php
             $db = \Config\Database::connect();
-            $session = \Config\Services::session();
-            $admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
+            $session = \Config\Services::session(); 
+            $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
             $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-            if ($roles->products_buat != NULL) : ?>
-                <button type="button" class="btn btn-primary float-right" style="margin-left:20px;" data-toggle="modal" data-target="#modalAdd">
-                    <i class='fa fa-plus'></i>
-                    Tambah Barang
-                </button>
+            if($roles->products_buat != NULL): ?>
+            <button type="button" class="btn btn-primary float-right" style="margin-left:20px;" data-toggle="modal" data-target="#modalAdd">
+                <i class='fa fa-plus'></i>
+                Tambah Barang
+            </button>
             <?php endif ?>
 
             <!-- <button type="button" class="btn btn-secondary float-right" style="margin-left:20px;" data-toggle="modal" data-target="#modalPengelolaanStock">
@@ -239,15 +239,15 @@ Pengelolaan Barang
                                 <th class='text-center' colspan='<?= count($warehouses) ?>'>Persediaan Gudang</th>
                                 <!--<th class='text-center'rowspan='2'>Display</th>-->
                                 <th class="text-center" rowspan='2'>Dipesan</th>
-
+                                
                                 <?php
-                                $db = \Config\Database::connect();
-                                $session = \Config\Services::session();
-                                $admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
-                                $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
+                                    $db = \Config\Database::connect();
+                                    $session = \Config\Services::session(); 
+                                    $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
+                                    $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-                                if ($roles->products_edit != NULL) : ?>
-                                    <th class='text-center' rowspan='2'></th>
+                                    if($roles->products_edit != NULL): ?>
+                                        <th class='text-center' rowspan='2'></th>
                                 <?php endif ?>
                             </tr>
                             <tr>
@@ -261,28 +261,28 @@ Pengelolaan Barang
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $no = 0;
+                        <?php $no = 0;
                             foreach ($getProducts as $item) : $no++ ?>
                                 <tr>
                                     <td class="text-center"><?= $no ?></td>
                                     <td><?= $item["product_name"] ?></td>
                                     <td class="text-center"><?= $item["category_name"] ?></td>
-                                    <?php foreach ($warehouses as $gudang) : ?>
-                                        <td class="text-center"><?= $item["stocks_" . $gudang->name] ?></td>
+                                    <?php foreach($warehouses as $gudang): ?>
+                                        <td class="text-center"><?= $item["stocks_".$gudang->name] ?></td>
                                     <?php endforeach; ?>
                                     <td class="ajax-data text-center"></td>
                                     <?php
                                     $db = \Config\Database::connect();
-                                    $session = \Config\Services::session();
-                                    $admins = $db->table('administrators')->where('id', $session->login_id)->get()->getFirstRow();
+                                    $session = \Config\Services::session(); 
+                                    $admins = $db->table('administrators')->where('id',$session->login_id)->get()->getFirstRow();
                                     $roles =  $db->table('administrator_role')->where('id', $admins->role)->get()->getFirstRow();
 
-                                    if ($roles->products_edit != NULL) : ?>
-                                        <td class='text-center'>
-                                            <a href="<?= base_url('products/' . $item["product_id"] . '/manage') ?>" class='btn btn-sm btn-success' title="Edit">
-                                                <i class='fa fa-edit'></i>
-                                            </a>
-                                        </td>
+                                    if($roles->products_edit != NULL): ?>
+                                    <td class='text-center'>
+                                        <a href="<?= base_url('products/' . $item["product_id"] . '/manage') ?>" class='btn btn-sm btn-success' title="Edit">
+                                            <i class='fa fa-edit'></i>
+                                        </a>
+                                    </td>
                                     <?php endif ?>
                                 </tr>
                             <?php endforeach; ?>
@@ -292,152 +292,153 @@ Pengelolaan Barang
             </div>
         </div>
     </div>
-</div>
+    </div>
 
-<script>
-    var BaseUrlSKU = "<?= base_url('products/ajaxGetSKU') ?>";
-    var BaseUrlLoad = "<?= base_url('products/ajaxGetCategories') ?>";
-</script>
+    <script>
+        var BaseUrlSKU = "<?= base_url('products/ajaxGetSKU') ?>";
+        var BaseUrlLoad = "<?= base_url('products/ajaxGetCategories') ?>";
+    </script>
 
-<script src="<?= base_url("public/js/updateFields.js") ?>"></script>
-<script src="<?= base_url("public/js/loadSubCategories.js") ?>"></script>
-<script src="<?= base_url("public/js/checkSKU.js") ?>"></script>
+    <script src="<?= base_url("public/js/updateFields.js") ?>"></script>
+    <script src="<?= base_url("public/js/loadSubCategories.js") ?>"></script>
+    <script src="<?= base_url("public/js/checkSKU.js") ?>"></script>
 
-<script type="text/javascript">
-    function edit(id, category_id, sku_number, code_id, name, unit, details) {
-        $("#editIDGoods").val(id)
-        $("#editCategoryIDGoods").val(category_id)
-        $("#editSkuNumberGoods").val(sku_number)
-        $("#editcode_idGoods").val(code_id)
-        $("#editNameGoods").val(name)
-        $("#editUnitGoods").val(unit)
-        $("#editDetailsGoods").html(details)
-    }
-</script>
-
-<script>
-    $(document).ready(function() {
-
+    <script type="text/javascript">
+        function edit(id, category_id, sku_number, code_id, name, unit, details) {
+            $("#editIDGoods").val(id)
+            $("#editCategoryIDGoods").val(category_id)
+            $("#editSkuNumberGoods").val(sku_number)
+            $("#editcode_idGoods").val(code_id)
+            $("#editNameGoods").val(name)
+            $("#editUnitGoods").val(unit)
+            $("#editDetailsGoods").html(details)
+        }
+    </script>
+    
+    <script>
+        $(document).ready(function() {
+        
         // $('#capacitys').select2();
-
+            
         var Table = $('#example').DataTable({
-            columnDefs: [{
-                targets: [3, 4, 5, 6, 7, 8, 9],
-                visible: true
-            }],
-            orderTop: true
+               columnDefs: [{
+                   targets: [3,4,5,6,7,8,9],
+                   visible: true
+               }],
+               orderTop: true
+           });
+           
+           loadSalesQuantity();
+           
+           $('#warehouseFilter').on("change", function(){
+               const selectedWarehouse = $(this).val();
+               
+               if(selectedWarehouse == "3"){
+                   Table.columns([3]).visible(true, false);
+                   Table.columns([4,5,6,7,8,9, 10, 11,12]).visible(false, false);
+               }else if(selectedWarehouse == "2"){
+                   Table.columns([4]).visible(true, false);
+                   Table.columns([3,5,6,7,8,9,10,11,12]).visible(false, false);
+               }else if(selectedWarehouse == "8"){
+                   Table.columns([5]).visible(true, false);
+                   Table.columns([3,4,6,7,8,9,10,11,12]).visible(false, false);
+               }else if(selectedWarehouse == "4"){
+                   Table.columns([6]).visible(true, false);
+                   Table.columns([3,4,5,7,8,9,10,11,12]).visible(false, false);
+               }else if(selectedWarehouse == "1"){
+                   Table.columns([7]).visible(true, false);
+                   Table.columns([3,4,5,6,8,9,10,11,12]).visible(false, false);
+               }else if(selectedWarehouse == "5"){
+                   Table.columns([8]).visible(true, false);
+                   Table.columns([3,4,5,6,7,9,10,11,12]).visible(false, false);
+               }else if(selectedWarehouse == "6"){
+                   Table.columns([9]).visible(true, false);
+                   Table.columns([3,4,5,6,7,8,10,11,12]).visible(false, false);
+               }else if(selectedWarehouse == "7"){
+                   Table.columns([10]).visible(true, false);
+                   Table.columns([3,4,5,6,7,8,9,11,12]).visible(false, false);
+               }else if(selectedWarehouse == "10"){
+                   Table.columns([11]).visible(true, false);
+                   Table.columns([3,4,5,6,7,8,9,10,12]).visible(false, false);
+               }else if(selectedWarehouse == "9"){
+                   Table.columns([12]).visible(true, false);
+                   Table.columns([3,4,5,6,7,8,9,10,11]).visible(false, false);
+               }else{
+                   Table.columns([3,4,5,6,7,8,9,10,11,12]).visible(true, true);
+               }
+               
+               loadSalesQuantity();
+           });
         });
-
-        loadSalesQuantity();
-
-        $('#warehouseFilter').on("change", function() {
-            const selectedWarehouse = $(this).val();
-
-            if (selectedWarehouse == "3") {
-                Table.columns([3]).visible(true, false);
-                Table.columns([4, 5, 6, 7, 8, 9, 10, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "2") {
-                Table.columns([4]).visible(true, false);
-                Table.columns([3, 5, 6, 7, 8, 9, 10, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "8") {
-                Table.columns([5]).visible(true, false);
-                Table.columns([3, 4, 6, 7, 8, 9, 10, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "4") {
-                Table.columns([6]).visible(true, false);
-                Table.columns([3, 4, 5, 7, 8, 9, 10, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "1") {
-                Table.columns([7]).visible(true, false);
-                Table.columns([3, 4, 5, 6, 8, 9, 10, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "5") {
-                Table.columns([8]).visible(true, false);
-                Table.columns([3, 4, 5, 6, 7, 9, 10, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "6") {
-                Table.columns([9]).visible(true, false);
-                Table.columns([3, 4, 5, 6, 7, 8, 10, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "7") {
-                Table.columns([10]).visible(true, false);
-                Table.columns([3, 4, 5, 6, 7, 8, 9, 11, 12]).visible(false, false);
-            } else if (selectedWarehouse == "10") {
-                Table.columns([11]).visible(true, false);
-                Table.columns([3, 4, 5, 6, 7, 8, 9, 10, 12]).visible(false, false);
-            } else if (selectedWarehouse == "9") {
-                Table.columns([12]).visible(true, false);
-                Table.columns([3, 4, 5, 6, 7, 8, 9, 10, 11]).visible(false, false);
-            } else {
-                Table.columns([3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).visible(true, true);
-            }
-
-            loadSalesQuantity();
-        });
-    });
-
-
-
-    function loadSalesQuantity() {
-        const selectedWarehouse = $('#warehouseFilter').val();
-        $.ajax({
-            url: "<?= base_url('products/get/sales/quantity') ?>",
-            type: "GET",
-            dataType: "json",
-            data: {
-                warehouse_id: selectedWarehouse
-            },
-            success: function(response) {
-                const Table = $('#example').DataTable();
-
-                console.log(response);
-
+        
+        
+        
+        function loadSalesQuantity()
+        {
+            const selectedWarehouse = $('#warehouseFilter').val();
+            $.ajax({
+               url: "<?= base_url('products/get/sales/quantity') ?>",
+               type: "GET",
+               dataType: "json",
+               data: {
+                   warehouse_id: selectedWarehouse
+               },
+               success: function(response){
+                   const Table = $('#example').DataTable();
+                   
+                   console.log(response);
+                   
                 //   const SaleQuantity = response.map(function(item){
                 //       return [item.sale_quantity];
                 //   });
-
+                   
                 //   Table.column(13).data().each(function(value, index){
                 //       Table.cell(index, 13).data(SaleQuantity[index]); 
                 //   });
+                   
+                    var DeliveredArray = response.map(function(item) {
+                        return parseInt(item.delivered) || 0;
+                    });
 
-                var DeliveredArray = response.map(function(item) {
-                    return parseInt(item.delivered) || 0;
-                });
+                    var saleQuantityArray = response.map(function(item) {
+                        return parseInt(item.sale_quantity) || 0;
+                    });
 
-                var saleQuantityArray = response.map(function(item) {
-                    return parseInt(item.sale_quantity) || 0;
-                });
+                    Table.column(13).data().each(function(value, index) {
+                        // if(saleQuantityArray[index] !== 0){
+                            var newValue = (saleQuantityArray[index] || 0) - (DeliveredArray[index] || 0);
+                            Table.cell(index, 13).data(newValue + " Unit");
+                        // }else{
+                        //     var newValue = (saleQuantityArray[index] || 0);
+                        //     Table.cell(index, 13).data(newValue + " Unit");
+                        // }
+                    });
+                   
+                  Table.draw();
+               },
+               error: function(xhr, status, error){
+                   console.error('Error:', error);
+               }
+            });
+        }
+    </script>
 
-                Table.column(13).data().each(function(value, index) {
-                    // if(saleQuantityArray[index] !== 0){
-                    var newValue = (saleQuantityArray[index] || 0) - (DeliveredArray[index] || 0);
-                    Table.cell(index, 13).data(newValue + " Unit");
-                    // }else{
-                    //     var newValue = (saleQuantityArray[index] || 0);
-                    //     Table.cell(index, 13).data(newValue + " Unit");
-                    // }
-                });
+    <?= $this->endSection() ?>
 
-                Table.draw();
-            },
-            error: function(xhr, status, error) {
-                console.error('Error:', error);
-            }
+    <?= $this->section("page_script") ?>
+    <script type="text/javascript">
+        $("#good_id").change(function() {
+            console.log('#good_id');
+            $.ajax({
+                url: "<?= base_url('products/search-filter-stock') ?>",
+                type: "post",
+                data: {
+                    good_id: $('#good_id').val(),
+                },
+                success: function(data) {
+                    $("#data").html(data)
+                }
+            });
         });
-    }
-</script>
-
-<?= $this->endSection() ?>
-
-<?= $this->section("page_script") ?>
-<script type="text/javascript">
-    $("#good_id").change(function() {
-        console.log('#good_id');
-        $.ajax({
-            url: "<?= base_url('products/search-filter-stock') ?>",
-            type: "post",
-            data: {
-                good_id: $('#good_id').val(),
-            },
-            success: function(data) {
-                $("#data").html(data)
-            }
-        });
-    });
-</script>
-<?= $this->endSection() ?>
+    </script>
+    <?= $this->endSection() ?>
