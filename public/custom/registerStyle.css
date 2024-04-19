@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+.card-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.card{
+    width: 50%;
+    /* height: 30%; */
+    margin: auto;
+    text-align: center;
+    font-family: "Poppins", sans-serif;
+    box-shadow: 0px 0px 5px 0px rgba(102, 102, 102, 0.5);
+    border: none;
+    border-radius: 10px;
+    transition: 0.5s ease;
+    display: none;
+}
+
+.slide-out-left {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  
+  .slide-in-right {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+  
+  .slide-out-right {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  
+  .slide-in-left {
+    transform: translateX(-100%);
+    opacity: 1;
+  }
+
+#btn-0{
+    border: none;
+    border-radius: 10px;
+}
+
+#btn-0:hover{
+    transition: 0.3s;
+    transform: scale(1.05);
+}
+
+#btn-1-previous, #btn-1-next{
+    border: none;
+    border-radius: 10px;
+}
+
+#btn-1-previous:hover, #btn-1-next:hover{
+    transition: 0.3s;
+    transform: scale(1.05);
+}
+
+.purchased{
+    height: 225px;
+}
+
+.not-purchased{
+    height: 410px;
+}
+
+.phonePurchased{
+    border: 1px solid #516360;
+}
+
+.titlePurchased{
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+.titleNotPurchased{
+    margin-bottom: 30px;
+}
+
+.titleConfirmation{
+    margin-bottom: 30px;
+}
+
+.labelPhonePurchased{
+    position: absolute;
+    top: 50%; 
+    transform: translateY(-50%); 
+    left: 1%;
+    font-size: 14px;
+    padding: 0px 5px;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.notPurchased {
+    border: 1px solid #516360;
+}
+
+.labelNotPurchased{
+    position: absolute;
+    top: 50%; 
+    transform: translateY(-50%); 
+    left: 1%;
+    font-size: 14px;
+    padding: 0px 5px;
+    pointer-events: none;
+    transition: 0.3s;
+    font-weight: lighter;
+}
+
+.password{
+    border: 1px solid #516360;
+}
+
+.labelConfirmation{
+    position: absolute;
+    top: 50%; 
+    transform: translateY(-50%); 
+    left: 1%;
+    font-size: 14px;
+    padding: 0px 5px;
+    pointer-events: none;
+    transition: 0.3s;
+    font-weight: lighter;
+}
+
+.active{
+    display: block;
+}
+
+.password:focus + .labelConfirmation,
+.not-empty + .labelConfirmation{
+    top: -1px;
+    color: #516360;
+    background-color: #ffffffff;
+}
+
+.phonePurchased:focus + .labelPhonePurchased,
+.not-empty + .labelPhonePurchased{
+    top: -1px;
+    color: #516360;
+    background-color: #ffffffff;
+}
+
+.notPurchased:focus + .labelNotPurchased,
+.not-empty + .labelNotPurchased{
+    top: -1px;
+    color: #516360;
+    background-color: #ffffffff;
+}
+
+@media only screen and (max-width: 640px){
+    .card{
+        width: 90%;
+        height: 37%;
+    }
+
+    .purchased{
+        height: 250px;
+    }
+
+    .not-purchased{
+        height: 410px;
+    }
+
+    .confirmBtn{
+        width: 100%;
+    }
+}

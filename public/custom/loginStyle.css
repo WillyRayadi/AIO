@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+.card-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: "Poppins", sans-serif;
+}
+
+.card{
+    width: 80%;
+    text-align: center;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px 0px rgba(102,102,102, 0.4);
+}
+
+#right{
+    color: #ffff;
+    background-color: #00aff0;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-left: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 5px 0px rgba(102,102,102, 0.4);
+}
+
+.title{
+    margin-bottom: 40px;
+    color: #00aff0;
+    letter-spacing: 3px;
+    font-weight: bold;
+}
+
+::placeholder{
+    color: #516360;
+    font-size: 13px;
+}
+
+#phone{
+    width: 80%;
+    border: none;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    background-color: #f2f4f6;
+    padding: 10px;
+    padding-left: 40px;
+    border-radius: 10px;
+}
+
+#password{
+    width: 80%;
+    border: none;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    background-color: #f2f4f6;
+    padding: 10px;
+    padding-left: 40px;
+    border-radius: 10px;
+
+}
+
+#Login{
+    width: 35%;
+    background-color: #00aff0;
+    color: #fff;
+    border-radius: 20px;
+    box-shadow: 0px 0px 5px 0px rgba(102,102,102, 0.5);
+}
+
+#Register{
+    width: 35%;
+    background-color: #00aff0;
+    color: #fff;
+    border: 2px solid #fff;
+    border-radius: 20px;
+}
+
+#Login:hover{
+    transform: scale(1.05);
+}
+
+#Register:hover{
+    transform: scale(1.05);
+}
+
+#register{
+    background-color: #343A40;
+}
+
+.registerTitle{
+    font-weight: bold;
+    letter-spacing: 3px;
+}
+
+
+@media only screen and (max-width: 768px){
+    #phone{
+        width: 95%;
+    }
+    #password{
+        width: 95%;
+    }
+    #Login{
+        width: 95%;
+        border-radius: 6px;
+    }
+    .title{
+        margin-bottom: 30px;
+    }
+    #right{
+        display: none;
+    }
+}

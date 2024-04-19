@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+body{
+    background: lightgrey;
+}
+
+.product-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    height: 100vh;
+}
+
+.cards{
+    width: 414px;
+    background: #ffff;
+}
+
+.card{
+    margin-top: 10px;
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.product-image{
+    width: 35%;
+}
+
+@media only screen and (max-width: 576px){
+    .cards{
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .product-container{
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .card{
+        width: 40%;
+    }
+}
